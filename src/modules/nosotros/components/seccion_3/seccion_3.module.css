@@ -1,0 +1,128 @@
+.seccion {
+  width: 100%;
+  padding: 10px 0 28px;
+  background:
+    radial-gradient(circle at center top, rgba(255, 98, 56, 0.08), transparent 22%),
+    linear-gradient(180deg, #ffffff 0%, #f9fbff 100%);
+}
+
+.contenido {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px;
+}
+
+.bloque {
+  position: relative;
+  min-height: 220px;
+  padding: 26px 26px 24px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at top right, rgba(56, 79, 205, 0.1), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f4f7fd 100%);
+  border: 1px solid rgba(209, 217, 240, 0.84);
+  box-shadow: 0 22px 40px rgba(18, 27, 65, 0.09);
+}
+
+.insignia {
+  width: 50px;
+  height: 50px;
+  margin-bottom: 16px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #2438b5 0%, #4f6cff 100%);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  font-weight: 900;
+  box-shadow: 0 14px 24px rgba(44, 66, 188, 0.2);
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(47, 60, 201, 0.08);
+  color: #3046ca;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin: 14px 0 18px;
+  color: #131c3f;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.titulo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 88px;
+  height: 4px;
+  background: #ff2e2e;
+}
+
+.texto {
+  margin: 0;
+  color: #596480;
+  font-size: 1rem;
+  line-height: 1.9;
+  text-align: justify;
+}
+
+@media (max-width: 900px) {
+  .contenido {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .contenido {
+    padding: 0 16px;
+    gap: 18px;
+  }
+
+  .bloque {
+    min-height: 0;
+    padding: 20px 18px 18px;
+    border-radius: 20px;
+  }
+
+  .insignia {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    font-size: 0.86rem;
+  }
+
+  .titulo {
+    margin: 12px 0 14px;
+    font-size: 1.55rem;
+    padding-bottom: 10px;
+  }
+
+  .titulo::after {
+    width: 72px;
+    height: 3px;
+  }
+
+  .texto {
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+}

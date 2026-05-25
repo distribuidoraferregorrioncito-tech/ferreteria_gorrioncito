@@ -1,0 +1,196 @@
+.seccion {
+  width: 100%;
+  margin-bottom: 70px;
+  margin-top: 70px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background: #ffffff;
+  font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+.tituloPrincipal {
+  margin: 0 0 18px;
+  text-align: center;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+  font-weight: 800;
+  color: #161D4B;
+}
+
+.sliderWrap {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  align-items: center;
+  gap: 14px;
+}
+
+.tarjetas {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 26px;
+}
+
+.card {
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #dadada;
+  box-shadow: 0 5px 16px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  padding: 6px;
+  animation: entradaCard 0.45s ease;
+  transform-origin: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+}
+
+.imagenWrap {
+  border-radius: 18px 18px 28px 28px;
+  overflow: hidden;
+}
+
+.imagen {
+  width: 100%;
+  height: 245px;
+  display: block;
+  object-fit: cover;
+  animation: zoomImagen 0.45s ease;
+}
+
+.placeholder {
+  width: 100%;
+  height: 245px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #eef2fb 0%, #fbfcff 100%);
+  color: #77819b;
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.cardBody {
+  padding: 10px 8px 14px;
+  text-align: center;
+}
+
+.cardTitulo {
+  margin: 0 0 8px;
+  font-size: clamp(1.8rem, 3vw, 2.1rem);
+  line-height: 1.05;
+  font-weight: 800;
+  color: #111111;
+}
+
+.cardLink {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #344b85;
+}
+
+.flecha {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: #efefef;
+  color: #111111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+
+.flecha:hover {
+  background: #e3e3e3;
+}
+
+.flecha:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.flechaIzquierda {
+  justify-self: end;
+}
+
+.flechaDerecha {
+  justify-self: start;
+}
+
+.vacio {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 22px;
+  border: 1px solid #dadada;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fe 100%);
+  color: #6d7894;
+  font-weight: 700;
+}
+
+@keyframes entradaCard {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes zoomImagen {
+  from {
+    opacity: 0.75;
+    transform: scale(1.06);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 980px) {
+  .tarjetas {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .seccion {
+    padding: 18px 14px 28px;
+  }
+
+  .sliderWrap {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .tarjetas {
+    grid-template-columns: 1fr;
+  }
+
+  .flecha {
+    display: none;
+  }
+
+  .imagen {
+    height: 220px;
+  }
+
+  .cardTitulo {
+    font-size: 1.9rem;
+  }
+}

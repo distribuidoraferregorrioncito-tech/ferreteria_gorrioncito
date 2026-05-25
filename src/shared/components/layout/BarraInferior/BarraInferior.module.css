@@ -1,0 +1,545 @@
+/* ============================================================
+   BarraInferior.module.css
+   Mobile     → max-width: 767px
+   Tablet     → 768px – 1023px
+   Laptop     → 1024px – 1439px
+   Desktop    → 1440px+
+   ============================================================ */
+
+/* ─── BASE ──────────────────────────────────────────────── */
+
+.footer {
+  background: #0c192c;
+  color: #90959c;
+  font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  padding-top: 20px;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+/* ─── SUPERIOR GRID (4 columnas base — laptop/desktop) ─── */
+
+.superior {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 18px 20px 14px;
+  display: grid;
+  grid-template-columns: 1.2fr 1fr 0.85fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ─── LOGO ──────────────────────────────────────────────── */
+
+.logoWrap {
+  width: 100px;
+  height: auto;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding-right: 10px;
+  flex-shrink: 0;
+}
+
+.logo {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+/* ─── LAYOUT HELPERS ────────────────────────────────────── */
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.columna h3 {
+  color: #ffffff;
+  font-size: 30px;
+  margin: 0;
+}
+
+/* Subtítulo azul debajo del nombre */
+.columna p {
+  color: #1478e0;
+  margin-top: -5px;
+  margin-bottom: 0;
+}
+
+/* Slogan / texto descriptivo */
+.columna span {
+  display: block;
+  margin-top: 10px;
+  font-size: 0.88rem;
+  line-height: 1.5;
+  color: #90959c;
+}
+
+/* ─── TÍTULOS DE SECCIÓN ────────────────────────────────── */
+
+.titulo {
+  margin: 18px 0 10px;
+  font-size: 0.96rem;
+  font-weight: 800;
+  color: #ffffff;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.titulo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 175px;
+  height: 2px;
+  background: #0025fa;
+}
+
+/* ─── LISTA DE PRODUCTOS (ul sin clase en el JSX) ────────── */
+
+.superior > div > ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.superior > div > ul li {
+  font-size: 0.88rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #90959c;
+  cursor: default;
+  transition: color 0.15s ease;
+}
+
+.superior > div > ul li:hover {
+  color: #ffffff;
+}
+
+/* ─── LEGAL — Link directo ───────────────────────────────── */
+
+.listaLegal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #90959c;
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.listaLegal:hover {
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.iconoHoja {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: #1478e0;
+}
+
+/* ─── CONTACTOS ─────────────────────────────────────────── */
+
+.contactos {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.contactos p {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #90959c;
+}
+
+.filaDireccion {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.filaDireccion p {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #90959c;
+  line-height: 1.5;
+}
+
+.iconoTelefono {
+  width: 18px;
+  height: 18px;
+  color: #1478e0;
+  flex-shrink: 0;
+}
+
+.iconoCorreo {
+  width: 18px;
+  height: 18px;
+  color: #1478e0;
+  flex-shrink: 0;
+}
+
+.iconoUbicacion {
+  width: 18px;
+  height: 18px;
+  color: #1478e0;
+  flex-shrink: 0;
+}
+
+/* ─── ICONOS REDES SOCIALES ─────────────────────────────── */
+
+.iconos {
+  display: flex;
+  gap: 14px;
+  margin-top: 20px;
+  margin-left: 0;
+  flex-wrap: wrap;
+}
+
+.icono {
+  width: 35px;
+  height: 35px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.iconoImg {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.iconoLink {
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.iconoLink:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.25);
+}
+
+/* ─── INFERIOR ──────────────────────────────────────────── */
+
+.inferior {
+  max-width: 1480px;
+  margin: 0 auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 20px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  text-align: center;
+  gap: 12px;
+}
+
+.inferior p {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #90959c;
+}
+
+.lineaVertical {
+  width: 1px;
+  height: 14px;
+  background: rgba(144, 149, 156, 0.5);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   MOBILE  →  max-width: 767px
+   ============================================================ */
+@media (max-width: 767px) {
+  .footer {
+    padding: 16px 16px 0;
+  }
+
+  .superior {
+    grid-template-columns: 1fr;
+    padding: 16px 0 12px;
+    gap: 20px;
+  }
+
+  /* Primera columna (.columna) centrada */
+  .columna {
+    align-items: center;
+    text-align: center;
+  }
+
+  .columna h3 {
+    font-size: 22px;
+  }
+
+  .row {
+    justify-content: center;
+  }
+
+  .logoWrap {
+    width: 72px;
+  }
+
+  /* Títulos centrados */
+  .titulo {
+    margin-top: 0;
+    text-align: center;
+  }
+
+  .titulo::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  /* Productos centrados */
+  .superior > div > ul {
+    align-items: center;
+    text-align: center;
+  }
+
+  .superior > div > ul li {
+    font-size: 0.83rem;
+  }
+
+  /* Legal centrado */
+  .listaLegal {
+    justify-content: center;
+    font-size: 0.83rem;
+  }
+
+  /* Contactos centrados */
+  .contactos {
+    align-items: center;
+    text-align: center;
+  }
+
+  .contactos p {
+    justify-content: center;
+    font-size: 0.82rem;
+  }
+
+  .filaDireccion {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .filaDireccion p {
+    font-size: 0.82rem;
+  }
+
+  /* Iconos redes centrados */
+  .iconos {
+    justify-content: center;
+  }
+
+  /* Inferior apilado */
+  .inferior {
+    flex-direction: column;
+    padding: 14px 0 12px;
+    gap: 6px;
+  }
+
+  .inferior p {
+    font-size: 0.78rem;
+  }
+
+  /* Ocultar separadores verticales en mobile */
+  .lineaVertical {
+    display: none;
+  }
+}
+
+/* ============================================================
+   TABLET  →  768px – 1023px
+   ============================================================ */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .footer {
+    padding: 18px 24px 0;
+  }
+
+  .superior {
+    grid-template-columns: repeat(2, 1fr);
+    padding: 18px 0 14px;
+    gap: 28px;
+  }
+
+  /* Primera columna (.columna) ocupa las 2 columnas */
+  .superior > div:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .columna h3 {
+    font-size: 26px;
+  }
+
+  .titulo {
+    margin-top: 0;
+    font-size: 0.92rem;
+  }
+
+  .logoWrap {
+    width: 88px;
+  }
+
+  .iconos {
+    gap: 18px;
+  }
+
+  .contactos p,
+  .filaDireccion p {
+    font-size: 0.85rem;
+  }
+
+  .inferior {
+    flex-direction: row;
+    justify-content: center;
+    padding: 18px 0;
+    gap: 14px;
+  }
+
+  .inferior p {
+    font-size: 0.84rem;
+  }
+
+  .lineaVertical {
+    height: 12px;
+  }
+}
+
+/* ============================================================
+   LAPTOP  →  1024px – 1439px
+   ============================================================ */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .footer {
+    padding: 20px 28px 0;
+  }
+
+  .superior {
+    grid-template-columns: 1.2fr 1fr 0.85fr 1fr;
+    padding: 18px 0 14px;
+    gap: 20px;
+  }
+
+  .columna h3 {
+    font-size: 27px;
+  }
+
+  .titulo {
+    font-size: 0.94rem;
+  }
+
+  .logoWrap {
+    width: 92px;
+  }
+
+  .iconos {
+    gap: 14px;
+  }
+
+  .contactos p,
+  .filaDireccion p {
+    font-size: 0.86rem;
+  }
+
+  .inferior {
+    padding: 18px 0;
+    gap: 12px;
+  }
+
+  .inferior p {
+    font-size: 0.86rem;
+  }
+}
+
+/* ============================================================
+   DESKTOP GRANDE  →  1440px+
+   ============================================================ */
+@media (min-width: 1440px) {
+  .footer {
+    padding: 24px 40px 0;
+  }
+
+  .superior {
+    grid-template-columns: 1.2fr 1fr 0.85fr 1fr;
+    padding: 24px 0 18px;
+    gap: 36px;
+  }
+
+  .columna h3 {
+    font-size: 32px;
+  }
+
+  .columna span {
+    font-size: 0.92rem;
+  }
+
+  .titulo {
+    font-size: 1rem;
+    margin: 20px 0 12px;
+  }
+
+  .logoWrap {
+    width: 110px;
+  }
+
+  .icono {
+    width: 40px;
+    height: 40px;
+  }
+
+  .iconos {
+    gap: 18px;
+    margin-top: 22px;
+  }
+
+  .contactos p,
+  .filaDireccion p {
+    font-size: 0.92rem;
+  }
+
+  .inferior {
+    padding: 22px 0;
+    gap: 20px;
+  }
+
+  .inferior p {
+    font-size: 0.90rem;
+  }
+
+  .lineaVertical {
+    height: 16px;
+  }
+
+  .listaLegal {
+    font-size: 0.90rem;
+  }
+}

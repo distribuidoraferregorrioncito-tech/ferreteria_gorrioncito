@@ -1,0 +1,1 @@
+tipados globales (ej. ApiResponse, User, etc.)

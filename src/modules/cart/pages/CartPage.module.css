@@ -1,0 +1,38 @@
+.contenidoHome {
+  margin-top: 26px;
+  min-height: calc(100vh - 96px);
+  background: #ffffff;
+}
+
+.encabezado {
+  max-width: 1200px;
+  margin: 0 auto 28px;
+  padding: 0 28px;
+}
+
+.titulo {
+  margin: 0;
+  text-align: center;
+  color: #061b82;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 800;
+  font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+
+@media (max-width: 720px) {
+  .contenidoHome {
+    margin-top: 178px;
+    padding: 16px 0 28px;
+  }
+
+  .encabezado {
+    padding: 0 14px;
+    margin-bottom: 16px;
+  }
+
+  .titulo {
+    font-size: clamp(1.9rem, 8vw, 2.5rem);
+  }
+}

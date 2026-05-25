@@ -1,0 +1,40 @@
+.searchBox {
+  height: 42px;
+  border-radius: 5px;
+  background: #f2f4fa;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 16px;
+  color: #e71c1c;
+}
+
+.searchInput {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: #080808a9;
+  font-family: Sora, sans-serif;
+  font-size: 0.95rem;
+  font-weight: bold;
+}
+
+.searchInput::placeholder {
+  color: #b3b3b3;
+}
+
+.searchButton {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modalLupa {
+  width: 20px;
+  height: 20px;
+  color: #968c8c;
+}

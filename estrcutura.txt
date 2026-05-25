@@ -1,0 +1,13 @@
+app
+    >routes
+        >AppRoutes.tsx
+    >layout
+    App.tsx 
+hooks 
+
+modules 
+    >auth
+        >>pages 
+        >>services ts
+routes
+services 

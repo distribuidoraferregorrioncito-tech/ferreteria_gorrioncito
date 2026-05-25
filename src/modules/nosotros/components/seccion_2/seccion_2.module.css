@@ -1,0 +1,200 @@
+.seccion {
+  width: 100%;
+  padding: 18px 0 42px;
+  background:
+    radial-gradient(circle at top right, rgba(47, 60, 201, 0.06), transparent 28%),
+    #ffffff;
+}
+
+.contenido {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.encabezado {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(47, 60, 201, 0.08);
+  color: #3046ca;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+}
+
+.titulo {
+  margin: 0 0 10px;
+  color: #131c3f;
+  font-size: clamp(2rem, 3vw, 2.7rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  max-width: 720px;
+}
+
+.descripcion {
+  margin: 0;
+  color: #6a738b;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  max-width: 720px;
+}
+
+.resumen {
+  min-width: 180px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #2539b8 0%, #4260ff 100%);
+  color: #ffffff;
+  box-shadow: 0 22px 36px rgba(35, 56, 185, 0.2);
+}
+
+.resumen strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.resumen span {
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.94rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 16px;
+  padding-left: 70px;
+  padding-right: 70px;
+}
+
+.marcaCard {
+  min-height: 116px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px 20px;
+  border-radius: 24px;
+  border: 1px solid rgba(215, 221, 240, 0.85);
+  background:
+    radial-gradient(circle at top left, rgba(58, 80, 200, 0.08), transparent 34%),
+    linear-gradient(180deg, #ffffff 0%, #f7f9fe 100%);
+  box-shadow: 0 16px 30px rgba(18, 27, 65, 0.08);
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease,
+    border-color 0.22s ease;
+}
+
+.marcaCard:hover {
+  transform: translateY(-4px);
+  border-color: rgba(90, 110, 201, 0.26);
+  box-shadow: 0 22px 34px rgba(18, 27, 65, 0.13);
+}
+
+.marcaImg {
+  max-width: 100%;
+  max-height: 58px;
+  object-fit: contain;
+}
+
+.placeholder {
+  width: 100%;
+  min-height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #6b7592;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.vacio {
+  grid-column: 1 / -1;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7f9fe 100%);
+  border: 1px solid rgba(215, 221, 240, 0.85);
+  color: #67738f;
+  font-weight: 700;
+}
+
+@media (max-width: 900px) {
+  .encabezado {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .seccion {
+    padding: 8px 0 28px;
+  }
+
+  .contenido {
+    padding: 0 16px;
+  }
+
+  .titulo {
+    font-size: clamp(1.8rem, 8vw, 2.3rem);
+  }
+
+  .descripcion {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .resumen {
+    width: 100%;
+    min-width: 0;
+    padding: 18px 20px;
+    border-radius: 18px;
+  }
+
+  .resumen strong {
+    font-size: 1.8rem;
+  }
+
+  .marcaCard {
+    min-height: 92px;
+    padding: 14px 12px;
+    border-radius: 18px;
+  }
+
+  .marcaImg {
+    max-height: 44px;
+  }
+}

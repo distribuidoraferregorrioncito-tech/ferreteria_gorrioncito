@@ -1,0 +1,1 @@
+usaremos oulet para redimensionar el contenido dentro de ello

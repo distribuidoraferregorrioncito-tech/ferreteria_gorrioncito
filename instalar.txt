@@ -1,0 +1,6 @@
+npm install react-router-dom
+npm install -D @types/react @types/react-dom
+
+npm install cors
+npm install -D @types/cors
+npm install @supabase/supabase-js   

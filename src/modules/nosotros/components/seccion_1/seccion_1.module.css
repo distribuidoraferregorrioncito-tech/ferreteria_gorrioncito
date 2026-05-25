@@ -1,0 +1,303 @@
+.seccion {
+  width: 100%;
+  padding: 42px 0 24px;
+  background:
+    radial-gradient(circle at left top, rgba(58, 82, 204, 0.1), transparent 34%),
+    radial-gradient(circle at right center, rgba(255, 108, 64, 0.09), transparent 26%),
+    linear-gradient(180deg, #ffffff 0%, #f7faff 100%);
+}
+.imagen {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+  display: block;
+}
+.contenido {
+  max-width: 1320px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(420px, 0.94fr);
+  align-items: center;
+  gap: 52px;
+  padding: 0 24px;
+}
+
+.texto {
+  padding: 0 10px 0 0;
+  text-align: justify;
+}
+
+.kicker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(47, 60, 201, 0.08);
+  color: #3046ca;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.titulo {
+  margin: 14px 0 12px;
+  color: #0f1838;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.titulo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 116px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff5c35 0%, #ff2e2e 100%);
+}
+
+.subtitulo {
+  margin: 0 0 18px;
+  max-width: 620px;
+  color: #2b3d82;
+  font-size: 1.06rem;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+.descripcion {
+  margin: 0 0 28px;
+  color: #56627f;
+  font-size: 1.08rem;
+  line-height: 1.85;
+  max-width: 720px;
+}
+
+.resumenes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.resumenCard {
+  padding: 18px 18px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(206, 215, 238, 0.82);
+  box-shadow: 0 16px 30px rgba(23, 34, 85, 0.08);
+}
+
+.resumenCard strong {
+  display: block;
+  margin-bottom: 8px;
+  color: #182350;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.resumenCard span {
+  display: block;
+  color: #64708c;
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+
+.contactos {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.contactoCard {
+  background: linear-gradient(180deg, #ffffff 0%, #f5f7fc 100%);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(194, 204, 233, 0.7);
+  box-shadow: 0 18px 30px rgba(23, 34, 85, 0.08);
+}
+
+.icono {
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ff4f3d 0%, #ff2d2d 100%);
+  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 10px 18px rgba(255, 47, 47, 0.24);
+}
+
+.iconoTelefono {
+  width: 24px;
+  height: 24px;
+  color: #1478e0;
+  flex-shrink: 0;
+    border-radius: 999px;
+      justify-content: center;
+  font-size: 1rem;
+  font-weight: 900;
+  flex-shrink: 0;
+  box-shadow: 0 10px 18px #4cabf83d;
+}
+
+.contactoCard h3 {
+  margin: 0 0 4px;
+  color: #1f2a56;
+  font-weight: 800;
+}
+
+.contactoCard p {
+  margin: 0;
+  color: #6b7591;
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visualMarco {
+  position: relative;
+  width: 100%;
+  max-width: 560px;
+  padding: 20px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at top left, rgba(86, 104, 208, 0.18), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #eef2fb 100%);
+  border: 1px solid rgba(199, 208, 238, 0.8);
+  box-shadow: 0 28px 54px rgba(16, 24, 60, 0.14);
+}
+
+.visualTag {
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 28px;
+  z-index: 1;
+  padding: 16px 18px;
+  border-radius: 20px;
+  background: rgba(13, 22, 54, 0.82);
+  backdrop-filter: blur(10px);
+  color: #ffffff;
+  box-shadow: 0 18px 30px rgba(10, 15, 35, 0.22);
+}
+
+.visualTag strong {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.98rem;
+  font-weight: 800;
+}
+
+.visualTag span {
+  display: block;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.imagen {
+  width: 100%;
+  height: auto  ;
+  object-fit: cover;
+  display: block;
+  border-radius: 22px;
+}
+
+@media (max-width: 900px) {
+  .contenido {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+
+  .resumenes,
+  .contactos {
+    grid-template-columns: 1fr;
+  }
+
+  .visual {
+    order: -1;
+  }
+
+  .imagen {
+    height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .seccion {
+    padding: 28px 0 18px;
+  }
+
+  .contenido {
+    padding: 0 16px;
+    gap: 22px;
+  }
+
+  .kicker {
+    font-size: 0.72rem;
+  }
+
+  .titulo {
+    margin: 12px 0 10px;
+    font-size: clamp(1.9rem, 8vw, 2.5rem);
+    padding-bottom: 12px;
+  }
+
+  .titulo::after {
+    width: 86px;
+  }
+
+  .subtitulo {
+    margin-bottom: 14px;
+    font-size: 0.96rem;
+    line-height: 1.55;
+  }
+
+  .descripcion {
+    margin-bottom: 18px;
+    font-size: 0.96rem;
+    line-height: 1.7;
+  }
+
+  .resumenCard,
+  .contactoCard {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  .visualMarco {
+    padding: 14px;
+    border-radius: 24px;
+  }
+
+  .visualTag {
+    position: static;
+    margin-bottom: 12px;
+    padding: 14px 16px;
+    border-radius: 16px;
+  }
+
+  .imagen {
+    height: 260px;
+    border-radius: 18px;
+  }
+}

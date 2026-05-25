@@ -1,0 +1,153 @@
+.seccion {
+  width: 100%;
+  padding: 0 40px;
+}
+
+/* TITULO PRINCIPAL */
+
+.titulo {
+  margin: 14px 0 12px;
+  color: #0f1838;
+  font-size: clamp(2.2rem, 4vw, 3.6rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.titulo::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 116px;
+  height: 4px;
+  background: linear-gradient(90deg, #ff5c35 0%, #ff2e2e 100%);
+}
+
+/* CONTENEDOR GENERAL */
+
+.historiaContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* AUTOR */
+
+.autor {
+  color: #0f1838;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* TITULO GORRION */
+
+.logoTitulo {
+  text-align: center;
+}
+
+.logoTitulo h2 {
+  color: #0f1838;
+  font-size: 3.1rem;
+  font-family: "Cinzel", serif;
+  font-weight: bold;
+  letter-spacing: 12px;
+  text-transform: uppercase;
+}
+
+/* SECCION COMUNIDAD */
+
+.comunidadSection {
+  text-align: center;
+}
+
+.comunidadSection h3 {
+  color: #242527;
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+/* GRID DE HISTORIAS */
+
+.historiaGrid {
+  display: flex;
+  gap: 35px;
+  margin-top: 30px;
+}
+
+/* TARJETAS */
+
+.historiaCard {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.historiaCard h4 {
+  color: #122e6e;
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.historiaCard p {
+  color: #596480;
+  font-size: 1.02rem;
+  line-height: 1.8;
+  margin-top: 14px;
+  text-align: justify;
+}
+.historiaContainer{
+  position: relative;
+}
+.menu{
+  position: absolute;
+
+  top: 60px;
+  right: 20px;
+
+  background: white;
+
+  border-radius: 12px;
+
+  padding: 10px 15px;
+
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+
+  z-index: 100;
+}
+
+.menu a{
+  text-decoration: none;
+  color: #0f1838;
+  font-weight: 600;
+}
+
+.menuBtn{
+  position: absolute;
+
+  top: 20px;
+  right: 20px;
+
+  border: none;
+  background: transparent;
+
+  font-size: 28px;
+  cursor: pointer;
+
+  transition: 0.3s;
+}
+/* RESPONSIVE */
+
+@media (max-width: 768px) {
+  .historiaGrid {
+    flex-direction: column;
+  }
+
+  .logoTitulo h2 {
+    font-size: 2rem;
+    letter-spacing: 6px;
+  }
+}

@@ -1,0 +1,24 @@
+.company {
+  
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.company h3 {
+color: white;
+font-size: 26px;
+}
+.company p {
+  color: #1478e0;
+  font-size: 16px;
+  margin-top: -10px ;
+}
+
+.logoCompany {
+  width: 60px;
+  height: auto;
+  border-radius: 999px;
+  object-fit: cover;
+
+}

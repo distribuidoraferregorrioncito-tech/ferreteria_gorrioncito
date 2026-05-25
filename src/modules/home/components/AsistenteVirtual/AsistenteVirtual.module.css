@@ -1,0 +1,246 @@
+.btnChat {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  width: 65px;
+  height: 65px;
+  border: none;
+  border-radius: 50%;
+  background: #0d47a1;
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+  transition: 0.3s;
+  z-index: 999;
+}
+
+.btnChat:hover {
+  transform: scale(1.1);
+}
+
+.chatModal {
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  width: 340px;
+  height: 520px;
+  background: white;
+  border-radius: 25px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+}
+
+/* HEADER */
+.chatHeader {
+  background: #90caf9;
+  padding: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chatHeader h2 {
+  font-size: 18px;
+  color: #1a237e;
+}
+
+.chatHeader h1 {
+  font-size: 28px;
+  color: #1a237e;
+}
+
+.closeBtn {
+  border: none;
+  background: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* BODY */
+.chatBody {
+  flex: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+}
+
+.mensajeBot {
+  background: #0d1b74;
+  color: white;
+  padding: 15px;
+  border-radius: 15px;
+  width: fit-content;
+  max-width: 80%;
+}
+
+.mensajeUser {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 15px;
+  align-self: flex-end;
+  width: fit-content;
+  max-width: 80%;
+}
+
+/* ── Indicador "escribiendo..." ─────────────────────────────── */
+.pensando {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 12px 18px;
+  min-width: 60px;
+}
+
+.pensando span {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.75);
+  animation: bounce 1.2s infinite ease-in-out;
+}
+
+.pensando span:nth-child(2) { animation-delay: 0.2s; }
+.pensando span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes bounce {
+  0%, 80%, 100% { transform: translateY(0);    opacity: 0.5; }
+  40%            { transform: translateY(-6px); opacity: 1;   }
+}
+
+/* OPCIONES */
+.opciones {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.opciones button {
+  padding: 12px;
+  margin-left: 120px;
+  border-radius: 30px;
+  border: 2px solid #999;
+  background: white;
+  cursor: pointer;
+  transition: 0.3s;
+  justify-content: end;
+  align-items: end;
+  display: flex;
+}
+
+.opciones button:hover {
+  background: #eeeeee;
+}
+
+/* FOOTER */
+.chatFooter {
+  padding: 15px;
+  display: flex;
+  gap: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.chatFooter input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 30px;
+  border: 1px solid #ccc;
+  outline: none;
+}
+
+.chatFooter input:disabled {
+  background: #f5f5f5;
+  color: #aaa;
+}
+
+.chatFooter button {
+  width: 50px;
+  border: none;
+  border-radius: 50%;
+  background: #039be5;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.chatFooter button:disabled {
+  background: #b0bec5;
+  cursor: not-allowed;
+}
+
+.tituloContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo {
+  width: 80px;
+  height: auto;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.titulos h2 {
+  display: flex;
+  color: #010102;
+  font-size: 20px;
+  align-items: center;
+  justify-content: center;
+}
+
+.subtitulo h1 {
+  align-items: center;
+  font-size: 20px;
+  display: flex;
+  font-weight: bold;
+  justify-content: center;
+}
+
+.chatBody span {
+  color: #828485;
+  display: flex;
+  margin-bottom: -10px;
+}
+
+/* PRODUCTOS RECOMENDADOS */
+.productosRecomendados {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+  padding-left: 4px;
+}
+
+.productoCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #f0f4ff;
+  border-radius: 12px;
+  padding: 8px;
+  width: 90px;
+  gap: 6px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+.productoImg {
+  width: 70px;
+  height: 70px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.productoNombre {
+  font-size: 11px;
+  text-align: center;
+  color: #1a237e;
+  font-weight: 600;
+  word-break: break-word;
+}

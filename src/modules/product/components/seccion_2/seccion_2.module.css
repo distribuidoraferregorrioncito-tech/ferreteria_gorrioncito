@@ -1,0 +1,162 @@
+.sidebar {
+  width: 240px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8ff 100%);
+  border: 1px solid rgba(60, 79, 164, 0.1);
+  box-shadow: 0 18px 34px rgba(34, 43, 92, 0.12);
+  overflow: hidden;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+  padding: 10px;
+  background: linear-gradient(180deg, #edf0ff 0%, #e5e8f8 100%);
+}
+
+.tab {
+  border: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.4);
+  color: #7f8397;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 11px 8px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tabActiva {
+  background: #ffffff;
+  color: #243585;
+  box-shadow: 0 8px 18px rgba(36, 53, 133, 0.14);
+}
+
+.searchBox {
+  margin: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgba(114, 126, 168, 0.3);
+  border-radius: 16px;
+  padding: 11px 14px;
+  background: #ffffff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.modalSvg{
+  width:20px;
+  height:20px;
+  color: #5a6278;
+}
+
+.searchInput {
+  width: 100%;
+  border: none;
+  outline: none;
+  color: #5a6278;
+  font-size: 14px;
+  background: transparent;
+}
+
+.searchInput::placeholder {
+  color: #9ba4be;
+}
+
+.lista {
+  height: 520px;
+  overflow-y: auto;
+  padding: 14px 14px 16px;
+}
+
+.titulo {
+  margin: 0 0 12px;
+  color: #1d2652;
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  border: none;
+  border-radius: 14px;
+  background: transparent;
+  color: #5c647f;
+  font-size: 14px;
+  padding: 9px 10px;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.item:hover {
+  background: rgba(36, 53, 133, 0.06);
+  color: #243585;
+  transform: translateX(2px);
+}
+
+.itemActivo {
+  background: linear-gradient(180deg, rgba(36, 53, 133, 0.12) 0%, rgba(36, 53, 133, 0.06) 100%);
+  color: #243585;
+  font-weight: 800;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+  }
+
+  .lista {
+    height: auto;
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sidebar {
+    border-radius: 20px;
+  }
+
+  .tabs {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .tab {
+    min-height: 42px;
+    font-size: 13px;
+    padding: 10px 6px;
+  }
+
+  .searchBox {
+    margin: 0 10px;
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .lista {
+    padding: 12px 10px 14px;
+    max-height: 280px;
+  }
+
+  .titulo {
+    margin-bottom: 10px;
+    font-size: 15px;
+  }
+
+  .item {
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: 13px;
+  }
+}

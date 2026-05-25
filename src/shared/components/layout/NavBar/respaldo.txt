@@ -1,0 +1,437 @@
+import { startTransition, useState } from "react";
+import { Link } from "react-router-dom";
+import style from "./NavBarCategoria.module.css";
+import { supabase } from "../../../../app/services/apiSupabase";
+import { listarProductos } from "../../../../core/services/producto.service"
+import { listarCategorias } from "../../../../core/services/categoria.service"
+import { listarMarcas } from "../../../../core/services/marca.service"
+
+import {
+  DEFAULT_BRAND_IMAGE,
+  getField,
+  listStorageFolderFiles,
+  resolveFolderImage,
+  resolveCatalogImage,
+  resolveStorageFileName,
+} from "../../../utils/catalogImage";
+
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+type CartItem = {
+  id: string | number;
+  titulo: string;
+  categoria: string;
+  imagen: string;
+  cantidad: number;
+};
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const STORAGE_KEY = "cartItems";
+
+function getStorageUrl(bucketName: string | null, fileName: string | null) {
+  if (!bucketName || !fileName) return null;
+  const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+  return data?.publicUrl ?? null;
+}
+
+function buildDisplayName(rawName: string | null, fileName: string | null, fallback: string) {
+  const source = rawName || fileName;
+  if (!source) return fallback;
+
+  const baseName = /\.[A-Za-z]{2,5}$/.test(source) ? source.replace(/\.[^.]+$/, "") : source;
+  const normalized = baseName.replace(/[_-]+/g, " ").replace(/\s+/g, " ").trim();
+
+  if (!normalized) return fallback;
+  return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+async function fetchRowsRange(tableName: string, from: number, to: number) {
+  const { data, error } = await supabase.from(tableName).select("*").range(from, to);
+  if (error) throw error;
+  return (data ?? []) as Record<string, unknown>[];
+}
+
+async function fetchAllRows(tableName: string) {
+  const pageSize = 1000;
+  const allRows: Record<string, unknown>[] = [];
+  let from = 0;
+
+  while (true) {
+    const { data, error } = await supabase
+      .from(tableName)
+      .select("*")
+      .range(from, from + pageSize - 1);
+
+    if (error) throw error;
+
+    const rows = (data ?? []) as Record<string, unknown>[];
+    allRows.push(...rows);
+
+    if (rows.length < pageSize) break;
+    from += pageSize;
+  }
+
+  return allRows;
+}
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export const NavBarCategoria = () => {
+  const [mostrarCategorias, setMostrarCategorias] = useState(false);
+  const [productosCatalogo, setProductosCatalogo] = useState<CatalogProduct[]>([]);
+  const [categoriasMenu, setCategoriasMenu] = useState<string[]>([]);
+  const [marcasMenu, setMarcasMenu] = useState<{ nombre: string; imagen: string }[]>([]);
+  const [menuCargado, setMenuCargado] = useState(false);
+  const [cargandoMenu, setCargandoMenu] = useState(false);
+
+  // Modal "Lo quiero"
+  const [mostrarModalCompra, setMostrarModalCompra] = useState(false);
+  const [productoSeleccionado, setProductoSeleccionado] = useState<CatalogProduct | null>(null);
+
+  // ── Carga del menú ──────────────────────────────────────────────────────────
+
+  const cargarMenu = async () => {
+    if (menuCargado || cargandoMenu) return;
+
+    setCargandoMenu(true);
+
+    let data: Record<string, unknown>[];
+    try {
+      data = await fetchRowsRange("producto", 0, 47);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Error desconocido";
+      console.error("No se pudieron cargar los productos del menu:", message);
+      setProductosCatalogo([]);
+      setCategoriasMenu([]);
+      setMarcasMenu([]);
+      setCargandoMenu(false);
+      return;
+    }
+
+    const [categoriasResult, marcasResult] = await Promise.allSettled([
+      fetchAllRows("categoria"),
+      fetchAllRows("marca"),
+    ]);
+
+    const categoriasData = categoriasResult.status === "fulfilled" ? categoriasResult.value : [];
+    const marcasData = marcasResult.status === "fulfilled" ? marcasResult.value : [];
+
+    let archivosMarca: string[] = [];
+    try {
+      archivosMarca = await listStorageFolderFiles("marca");
+    } catch (error) {
+      console.error("No se pudieron listar los archivos de marcas:", error);
+    }
+
+    if (categoriasResult.status === "rejected") {
+      console.error("No se pudieron cargar las categorias del menu:", categoriasResult.reason);
+    }
+    if (marcasResult.status === "rejected") {
+      console.error("No se pudieron cargar las marcas del menu:", marcasResult.reason);
+    }
+
+    // Categorías
+    const categoriasMap = new Map<number, string>();
+    const categoriasLabels: string[] = [];
+    for (const row of categoriasData) {
+      const id = getField<number>(row, "ctgraId", "ctgraid", "id");
+      if (id === null || id === undefined) continue;
+
+      const nombre = getField<string>(
+        row,
+        "ctgraNombre",
+        "ctgranombre",
+        "categoriaNombre",
+        "categorianombre",
+        "nombre"
+      );
+      const imagenNombre = getField<string>(row, "ctgraImgNombre", "ctgraimgnombre");
+      const label = buildDisplayName(nombre, imagenNombre, `Categoria ${id}`);
+      categoriasMap.set(Number(id), label);
+      categoriasLabels.push(label);
+    }
+
+    // Marcas
+    const marcasMap = new Map<number, string>();
+    const marcasLista: { nombre: string; imagen: string }[] = [];
+    for (const row of marcasData) {
+      const id = getField<number>(row, "marcaId", "marcaid", "id");
+      if (id === null || id === undefined) continue;
+
+      const nombre = getField<string>(row, "marcaNombre", "marcanombre", "nombre");
+      const imagenNombre = getField<string>(row, "marcaImgNombre", "marcaimgnombre");
+      const imagenArchivo = getField<string>(row, "marcaImgNombreBucket", "marcaimgnombrebucket");
+      const archivoResuelto = resolveStorageFileName(
+        imagenArchivo,
+        imagenNombre ?? nombre,
+        archivosMarca
+      );
+      const label = buildDisplayName(nombre, imagenNombre, `Marca ${id}`);
+      const imagen = resolveFolderImage(
+        "marca",
+        archivoResuelto,
+        getStorageUrl,
+        DEFAULT_BRAND_IMAGE
+      );
+
+      marcasMap.set(Number(id), label);
+      marcasLista.push({ nombre: label, imagen });
+    }
+
+    // Productos
+    const productosMapeados = data
+      .map((row) => {
+        const id = getField<number>(row, "prdcId", "prdcid", "productoId", "id");
+        const categoriaId = getField<number>(row, "ctgraId", "ctgraid");
+        const marcaId = getField<number>(row, "marcaId", "marcaid");
+        const nombre = getField<string>(
+          row,
+          "prdcNombre",
+          "prdcnombre",
+          "productoNombre",
+          "productonombre",
+          "nombre"
+        );
+        const imagenNombre = getField<string>(row, "prdcImgNombre", "prdcimgnombre");
+        const imagen = resolveCatalogImage(row, getStorageUrl);
+
+        if (!id || !categoriaId || !marcaId) return null;
+
+        return {
+          id: Number(id),
+          titulo: buildDisplayName(nombre, imagenNombre, `Producto ${id}`),
+          categoria: categoriasMap.get(Number(categoriaId)) || `Categoria ${categoriaId}`,
+          marca: marcasMap.get(Number(marcaId)) || `Marca ${marcaId}`,
+          imagen: String(imagen || ""),
+        };
+      })
+      .filter((item): item is CatalogProduct => Boolean(item));
+
+    startTransition(() => {
+      setProductosCatalogo(productosMapeados);
+      setCategoriasMenu(
+        Array.from(new Set(categoriasLabels)).sort((a, b) => a.localeCompare(b))
+      );
+      setMarcasMenu(
+        marcasLista
+          .filter(
+            (marca, index, array) =>
+              array.findIndex((item) => item.nombre === marca.nombre) === index
+          )
+          .sort((a, b) => a.nombre.localeCompare(b.nombre))
+      );
+      setMenuCargado(true);
+    });
+
+    setCargandoMenu(false);
+  };
+
+  const handleToggleCategorias = () => {
+    const next = !mostrarCategorias;
+    setMostrarCategorias(next);
+    if (next) cargarMenu();
+  };
+
+  // ── Carrito ─────────────────────────────────────────────────────────────────
+
+  const abrirModalCompra = (producto: CatalogProduct) => {
+    setProductoSeleccionado(producto);
+    setMostrarModalCompra(true);
+  };
+
+  const anadirAlCarrito = () => {
+    if (!productoSeleccionado) return;
+
+    const data = localStorage.getItem(STORAGE_KEY);
+    const cartItems: CartItem[] = (() => {
+      if (!data) return [];
+      try {
+        const parsed = JSON.parse(data) as CartItem[];
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    })();
+
+    const existente = cartItems.find((item) => item.id === productoSeleccionado.id);
+    const nextItems: CartItem[] = existente
+      ? cartItems.map((item) =>
+          item.id === productoSeleccionado.id
+            ? { ...item, cantidad: item.cantidad + 1 }
+            : item
+        )
+      : [
+          ...cartItems,
+          {
+            id: productoSeleccionado.id,
+            titulo: productoSeleccionado.titulo,
+            categoria: productoSeleccionado.categoria,
+            imagen: productoSeleccionado.imagen,
+            cantidad: 1,
+          },
+        ];
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextItems));
+    window.dispatchEvent(new Event("cartUpdated"));
+
+    setMostrarModalCompra(false);
+    setMostrarCategorias(false);
+  };
+
+  // ── Render ──────────────────────────────────────────────────────────────────
+
+  return (
+    <>
+      <button
+        type="button"
+        className={style.linkButton}
+        onClick={handleToggleCategorias}
+      >
+        Categorias
+      </button>
+
+      {mostrarCategorias && (
+        <div className={style.overlay} onClick={() => setMostrarCategorias(false)}>
+          <div className={style.panel} onClick={(e) => e.stopPropagation()}>
+            <div className={style.panelContenido}>
+              {/* Categorías */}
+              <aside className={style.sidebar}>
+                <h3 className={style.panelTitulo}>Categorias</h3>
+                <p className={style.panelSubtitulo}>
+                  Explora el catalogo por familia de productos.
+                </p>
+                <div className={style.listaCategorias}>
+                  {categoriasMenu.length > 0 ? (
+                    categoriasMenu.map((categoria, index) => (
+                      <button
+                        key={categoria}
+                        type="button"
+                        className={`${style.categoriaItem} ${
+                          index === 0 ? style.categoriaActiva : ""
+                        }`}
+                      >
+                        <span>{categoria}</span>
+                        <span className={style.categoriaFlecha}>{index === 0 ? ">" : "+"}</span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className={style.panelVacio}>No hay categorias disponibles.</div>
+                  )}
+                </div>
+              </aside>
+
+              {/* Productos */}
+              <section className={style.productosArea}>
+                <div className={style.productosEncabezado}>
+                  <div>
+                    <h3 className={style.productosTitulo}>Productos destacados</h3>
+                    <p className={style.productosTexto}>
+                      Una vista rapida del catalogo disponible.
+                    </p>
+                  </div>
+                  <span className={style.productosBadge}>{productosCatalogo.length}</span>
+                </div>
+
+                {productosCatalogo.length > 0 ? (
+                  <div className={style.gridProductos}>
+                    {productosCatalogo.map((producto) => (
+                      <article key={producto.id} className={style.productoCard}>
+                        <div className={style.productoImagenWrap}>
+                          {producto.imagen ? (
+                            <img
+                              src={producto.imagen}
+                              alt={producto.titulo}
+                              className={style.productoImagen}
+                            />
+                          ) : (
+                            <div className={style.productoPlaceholder}>Sin imagen</div>
+                          )}
+                        </div>
+                        <h4 className={style.productoTitulo}>{producto.titulo}</h4>
+                        <button
+                          type="button"
+                          className={style.productoBoton}
+                          onClick={() => abrirModalCompra(producto)}
+                        >
+                          Lo quiero
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                ) : (
+                  <div className={style.panelVacioCentro}>No hay productos para mostrar.</div>
+                )}
+              </section>
+
+              {/* Marcas */}
+              <aside className={style.marcasBox}>
+                <h3 className={style.panelTitulo}>Marcas</h3>
+                <p className={style.panelSubtitulo}>Aliados con presencia constante en stock.</p>
+                <div className={style.marcasLista}>
+                  {marcasMenu.length > 0 ? (
+                    marcasMenu.map((marca) => (
+                      <div key={marca.nombre} className={style.marcaItem}>
+                        {marca.imagen ? (
+                          <img src={marca.imagen} alt={marca.nombre} className={style.marcaImg} />
+                        ) : (
+                          <div className={style.marcaPlaceholder}>{marca.nombre}</div>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className={style.panelVacio}>No hay marcas disponibles.</div>
+                  )}
+                </div>
+              </aside>
+            </div>
+
+            <button type="button" className={style.verMas}>
+              Ver mas productos
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal "Lo quiero" */}
+      {mostrarModalCompra && (
+        <div className={style.modalOverlay} onClick={() => setMostrarModalCompra(false)}>
+          <div className={style.modalCompra} onClick={(e) => e.stopPropagation()}>
+            <h3 className={style.modalTitulo}>Como deseas continuar?</h3>
+            <p className={style.modalTexto}>Elige una opcion para poder completar tu compra</p>
+
+            <button
+              type="button"
+              className={style.modalBotonNaranja}
+              onClick={anadirAlCarrito}
+            >
+              <span className={style.modalIcono}>
+                <svg viewBox="0 0 24 24" aria-hidden="true" className={style.modalSvg}>
+                  <path
+                    d="M7 6h14l-1.5 7.5H9L7 4H3"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <circle cx="10" cy="19" r="1.6" fill="currentColor" />
+                  <circle cx="18" cy="19" r="1.6" fill="currentColor" />
+                </svg>
+              </span>
+              <span>Anadir al carrito</span>
+            </button>
+
+            <button type="button" className={style.modalBotonVerde}>
+              <span className={style.modalIcono}>
+                {/* whatsapp icon — importar images si lo necesitas aquí */}
+              </span>
+              <span>Realizar la compra</span>
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};

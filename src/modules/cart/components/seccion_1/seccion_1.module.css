@@ -1,0 +1,352 @@
+.seccion {
+   padding-top: 10px;
+   padding-bottom: 10px;
+   padding-right: 10px;
+   padding-left: 10px;
+}
+
+.contenido {
+  background: var(--color-background-secondary, #f4faf9);
+  border-radius: 18px;
+  padding: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+}
+
+.titulo {
+  margin: 0 0 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #030852;
+}
+
+.modalIconoImagen { width: 28px; height: 28px; }
+
+/* ── selector global ── */
+.selector {
+  width: fit-content;
+  height: 34px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 0.5px solid #d5e9ff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 16px;
+  cursor: pointer;
+}
+
+/* ── checkboxes circulares ── */
+.selectorCheck,
+.cardCheck {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #E1F5EE;
+  color: transparent;
+  border: 0.5px solid #9FE1CB;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+
+.selectorCheckActivo,
+.cardCheckActivo {
+  background: #1D9E75 !important;
+  color: #ffffff !important;
+  border-color: #1D9E75 !important;
+}
+
+/* ── lista de cards ── */
+.lista { display: flex; flex-direction: column; gap: 10px; }
+
+.card {
+  border: 0.5px solid #d5e9ff;
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 12px 14px;
+  display: grid;
+  grid-template-columns: 28px 110px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.cardSeleccionada {
+  border-color: #1D9E75;
+  background: #f0fdfb;
+}
+
+/* ── imagen pequeña ── */
+.cardImagenWrap {
+  width: 110px;
+  height: 80px;
+  border-radius: 10px;
+  border: 0.5px solid #e5f7f8;
+  background: #f8fffe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.cardImagen {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 6px;
+}
+
+/* ── info: badges + nombre ── */
+.cardInfo { min-width: 0; }
+
+.badges {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.badgeCategoria {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #E1F5EE;
+  color: #0F6E56;
+}
+
+.badgeMarca {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #E6F1FB;
+  color: #185FA5;
+}
+
+.cardTitulo {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #030852;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── acciones a la derecha ── */
+.acciones {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.cantidadBox {
+  display: inline-flex;
+  align-items: center;
+  border: 0.5px solid #c9e8ff;
+  border-radius: 999px;
+  background: #f4faff;
+  overflow: hidden;
+}
+
+.cantidadBox button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #185FA5;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cantidadBox span {
+  font-size: 0.9rem;
+  font-weight: 700;
+  min-width: 22px;
+  text-align: center;
+  color: #030852;
+}
+
+.eliminarBtn {
+  font-size: 11px;
+  font-weight: 600;
+  color: #A32D2D;
+  background: #FCEBEB;
+  border: none;
+  cursor: pointer;
+  padding: 3px 12px;
+  border-radius: 999px;
+}
+
+.eliminarBtn:hover { background: #F7C1C1; }
+
+/* ── resumen lateral ── */
+.resumen {
+  background: #ffffff;
+  border: 0.5px solid #d5e9ff;
+  border-radius: 16px;
+  padding: 20px 18px;
+  height: fit-content;
+}
+
+.resumenTitulo {
+  margin: 0 0 8px;
+  color: #030852;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.resumenTexto {
+  margin: 0 0 18px;
+  color: #666;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+.resumenProductos {
+  padding: 12px 0;
+  border-top: 0.5px solid #e8f4ff;
+  border-bottom: 0.5px solid #e8f4ff;
+  color: #030852;
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.totales { padding: 14px 0; }
+
+.totales p {
+  margin: 0 0 8px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #444;
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.totalFinal { font-size: 0.95rem; }
+
+.botonVerde,
+.botonVerdeSecundario {
+  width: 100%;
+  height: 46px;
+  border: none;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s, transform 0.2s;
+}
+
+.botonVerde {
+  background: linear-gradient(135deg, #25d366 0%, #0F6E56 100%);
+  margin-bottom: 10px;
+}
+
+.botonVerde:hover:not(:disabled) { filter: brightness(1.07); transform: translateY(-1px); }
+
+.botonVerde:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.botonVerdeSecundario {
+  background: linear-gradient(135deg, #378ADD 0%, #185FA5 100%);
+  margin-bottom: 18px;
+}
+
+.botonVerdeSecundario:hover { filter: brightness(1.07); transform: translateY(-1px); }
+
+.verMas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: #185FA5;
+  font-size: 0.88rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+/* ── carrito vacío ── */
+.vacio {
+  min-height: 460px;
+  background: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 30px 14px 60px;
+}
+
+.vacioIcono { width: 100px; height: 100px; color: #d7deea; }
+.vacioSvg { width: 100%; height: 100%; display: block; }
+.vacioSvg rect, .vacioSvg path, .vacioSvg circle { fill: currentColor; }
+
+.vacioTitulo { margin: 0; color: #8a8a8a; font-size: 1.5rem; font-weight: 800; }
+.vacioTitulo span { color: #185FA5; }
+
+.vacioTexto {
+  max-width: 400px; margin: 0; color: #7e8799;
+  font-size: 0.95rem; line-height: 1.6; text-align: center; font-weight: 500;
+}
+
+.vacioBoton {
+  min-width: 200px; height: 46px; padding: 0 22px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #378ADD 0%, #185FA5 100%);
+  color: #ffffff; display: inline-flex; align-items: center;
+  justify-content: center; text-decoration: none;
+  font-size: 0.95rem; font-weight: 700;
+}
+
+.vacioBoton:hover { filter: brightness(1.07); }
+
+/* ── responsive ── */
+@media (max-width: 1100px) {
+  .contenido { grid-template-columns: 1fr; }
+  .card { grid-template-columns: 28px 90px 1fr auto; }
+}
+
+@media (max-width: 720px) {
+  .seccion { padding: 0 12px 24px; }
+  .contenido { padding: 14px; gap: 16px; border-radius: 14px; }
+  .card {
+    grid-template-columns: 28px 80px 1fr;
+    grid-template-rows: auto auto;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  .acciones {
+    grid-column: 2 / -1;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cardImagenWrap { width: 80px; height: 60px; }
+  .cardTitulo { font-size: 0.82rem; }
+}

@@ -1,0 +1,135 @@
+.seccion1 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px; /* en vez de height */
+  text-align: center;
+  margin-top: 10px;  /* separación de 10px arriba */
+  padding-top: 10px; /* opcional: espacio interno extra */
+  font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  color: rgb(3, 8, 82);
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.seccion1 .imgPruebacss img {
+    width: 265px;   /* ancho deseado */
+    height: 265px;  /* alto deseado */
+    object-fit: contain; /* mantiene proporción, no corta */
+    margin-left: 10px;
+    border-radius: 10px;
+    background-color: #f0f0f0; /* opcional, relleno si la imagen no llena el cuadro */
+    border-radius: 60px;
+}
+/* seccion 2 */
+/* Contenedor principal */
+.seccion2 {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 10px;
+  gap: 15px;
+  font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  color: rgb(3, 8, 82);
+    text-align: center;
+    margin-bottom: 8px;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.seccion2 p {
+  font-size: 18px;
+}
+
+.construye {
+  color: rgb(247, 147, 30);
+  font-weight: bold;
+}
+
+/* Estilos del contenedor del carrusel */
+.imgPruebacss {
+  width: 100%;
+  overflow: hidden; /* Oculta lo que se sale del contenedor */
+  position: relative;
+}
+
+/* Contenedor de las imágenes */
+.carrusel {
+  display: flex;
+  gap: 1.3rem; /* separación entre imágenes */
+  animation: moverIzquierda 10s linear infinite; /* Animación continua */
+}
+
+/* Cada imagen */
+.carrusel img {
+  width: 300px;
+  height: 400px;
+  flex-shrink: 0; /* Evita que se encojan */
+  border-radius: 12px;
+}
+
+/* Animación para mover las imágenes de derecha a izquierda */
+@keyframes moverIzquierda {
+  0% {
+    transform: translateX(0%); /* Empieza fuera de la pantalla por la derecha */
+  }
+  100% {
+    transform: translateX(-100%); /* Termina fuera de la pantalla por la izquierda */
+  }
+}
+/* seccion 3 */
+.seccion_3 {
+  background-color: rgb(1, 1, 86);
+  background-image: linear-gradient(90deg, rgb(1, 1, 86) 63%, rgb(64, 72, 146) 100%);
+  color: white;
+  width: 100%;
+  min-height: 80vh; /* altura mínima para mantener la sección */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 70px; /* espacio interno para no pegar las imágenes al borde */
+  box-sizing: border-box;
+  overflow: hidden; /* evita que las imágenes salgan de la sección */
+  text-align: center;
+}
+
+.seccion_3 .paraLetra{
+  font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+.imgPruebacss3 {
+  display: flex;
+  flex-wrap: wrap; /* permite que las imágenes bajen a la siguiente línea en pantallas pequeñas */
+  gap: 15px; /* separación entre imágenes */
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.imgContainer {
+  background: rgb(255, 255, 255);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 135px;
+  width: 12vw;   /* ancho relativo a la pantalla, para ser responsive */
+  max-width: 150px; /* no se haga demasiado grande */
+  min-width: 90px;  /* no se haga demasiado pequeño */
+  height: 7vw;   /* altura proporcional al ancho de la pantalla */
+  max-height: 90px;
+  min-height: 60px;
+  box-sizing: border-box;
+}
+
+.imgContainer img {
+  width: 80%; /* ocupa el 80% del contenedor, adaptable */
+  height: auto; /* mantiene proporción de la imagen */
+  object-fit: contain;
+}
+
