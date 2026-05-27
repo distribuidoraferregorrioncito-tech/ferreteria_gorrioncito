@@ -3,7 +3,8 @@ import style from "./AsistenteVirtual.module.css";
 import { images } from "../../../../assets/img/index";
 import { supabase } from "../../../../lib/supabase";
 
-// ── Tipos ─────────────────────────────────────────────────────────────────────
+const BACKEND_URL = "http://127.0.0.1:8000";
+
 interface Conversacion {
   mensajeid: number;
   mensajeentrada: string;
@@ -17,7 +18,6 @@ interface ProductoRecomendado {
   imagen_url: string | null;
 }
 
-// ── Componente ────────────────────────────────────────────────────────────────
 const AsistenteVirtual = () => {
   const [open, setOpen]           = useState(false);
   const [mensaje, setMensaje]     = useState("");
@@ -27,15 +27,12 @@ const AsistenteVirtual = () => {
 
   const [historialconversacionid, setHistorialconversacionid] = useState<number | null>(null);
   const convIdRef = useRef<number | null>(null);
+  const bodyRef   = useRef<HTMLDivElement>(null);
 
-  const bodyRef = useRef<HTMLDivElement>(null);
-
-  // ── Sincronizar ref con state ──────────────────────────────────────────────
   useEffect(() => {
     convIdRef.current = historialconversacionid;
   }, [historialconversacionid]);
 
-  // ── Obtener URL pública del bucket ─────────────────────────────────────────
   const obtenerImagenUrl = (rutaBucket: string | null): string | null => {
     if (!rutaBucket) return null;
     const { data } = supabase.storage
@@ -44,19 +41,17 @@ const AsistenteVirtual = () => {
     return data?.publicUrl ?? null;
   };
 
-  // ── Buscar productos recomendados por mensajeid ────────────────────────────
   const fetchProductosRecomendados = async (
     mensajeid: number
   ): Promise<ProductoRecomendado[]> => {
     const { data: recomendados } = await supabase
       .from("recomendar_producto")
       .select("recomendarproductoid, recomendarproductonombre")
-      .eq("mensajeid", mensajeid);                  // ✅ antes era asistenteid
+      .eq("mensajeid", mensajeid);
 
     if (!recomendados || recomendados.length === 0) return [];
 
     const resultados: ProductoRecomendado[] = [];
-
     for (const rec of recomendados) {
       const { data: producto } = await supabase
         .from("producto")
@@ -65,22 +60,20 @@ const AsistenteVirtual = () => {
         .single();
 
       resultados.push({
-        recomendarproductoid: rec.recomendarproductoid,
+        recomendarproductoid:    rec.recomendarproductoid,
         recomendarproductonombre: rec.recomendarproductonombre,
         imagen_url: producto ? obtenerImagenUrl(producto.prdcimgnombrebucket) : null,
       });
     }
-
     return resultados;
   };
 
-  // ── Cargar historial completo ──────────────────────────────────────────────
   const fetchHistorial = useCallback(async (convId: number) => {
     const { data } = await supabase
-      .from("mensaje")                              // ✅ antes era asistente
+      .from("mensaje")
       .select("mensajeid, mensajeentrada, mensajesalida")
       .eq("historialconversacionid", convId)
-      .order("mensajeid", { ascending: true });     // ✅ antes era asistenteid
+      .order("mensajeid", { ascending: true });
 
     if (!data) return;
 
@@ -96,7 +89,7 @@ const AsistenteVirtual = () => {
     setHistorial(historialConProductos);
   }, []);
 
-  // ── Polling cada 3 segundos ────────────────────────────────────────────────
+  // ── Polling cada 3 segundos ───────────────────────────────────────────────
   useEffect(() => {
     if (!open || !historialconversacionid) return;
 
@@ -111,32 +104,31 @@ const AsistenteVirtual = () => {
     return () => clearInterval(intervalo);
   }, [open, historialconversacionid, fetchHistorial]);
 
-  // ── Auto-scroll ───────────────────────────────────────────────────────────
   useEffect(() => {
     if (bodyRef.current) {
       bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
     }
   }, [historial]);
 
-  // ── Abrir chat ────────────────────────────────────────────────────────────
+  // ── Abrir chat: crea historial con modo automático ────────────────────────
   const handleAbrir = async () => {
     if (open) return;
-
     setCargando(true);
     setHistorial([]);
 
     const { data, error } = await supabase
       .from("historial_conversacion")
-      .insert({ historialtitulo: "nueva conversación" })
+      .insert({
+        historialtitulo: "nueva conversación",
+        modorespuesta:   "automatico",        // ✅ nuevo campo
+      })
       .select("historialconversacionid")
       .single();
 
     if (!error && data) {
       const nuevoId = data.historialconversacionid;
-
       convIdRef.current = nuevoId;
       await fetchHistorial(nuevoId);
-
       setHistorialconversacionid(nuevoId);
       setOpen(true);
     }
@@ -144,7 +136,6 @@ const AsistenteVirtual = () => {
     setCargando(false);
   };
 
-  // ── Cerrar chat ───────────────────────────────────────────────────────────
   const handleCerrar = () => {
     setOpen(false);
     setHistorialconversacionid(null);
@@ -160,18 +151,48 @@ const AsistenteVirtual = () => {
     if (!texto || enviando || !historialconversacionid) return;
 
     const ultimoMensaje = historial[historial.length - 1];
-    if (ultimoMensaje && ultimoMensaje.mensajesalida === null) return; // ✅ antes asistentesalida
+    if (ultimoMensaje && ultimoMensaje.mensajesalida === null) return;
 
     setMensaje("");
     setEnviando(true);
 
-    await supabase.from("mensaje").insert({           // ✅ antes era asistente
-      mensajeentrada: texto,                          // ✅ antes asistenteentrada
-      historialconversacionid: historialconversacionid,
-    });
+    // 1. Inserta el mensaje en Supabase → obtiene mensajeid
+    const { data: nuevoMensaje, error } = await supabase
+      .from("mensaje")
+      .insert({
+        mensajeentrada:          texto,
+        historialconversacionid: historialconversacionid,
+      })
+      .select("mensajeid")
+      .single();
 
+    if (error || !nuevoMensaje) {
+      setEnviando(false);
+      return;
+    }
+
+    // 2. Recarga para mostrar el mensaje + loader animado
     const id = convIdRef.current;
     if (id) await fetchHistorial(id);
+
+    // 3. Envía al backend con mensajeid + texto + historialid
+    try {
+      await fetch(`${BACKEND_URL}/asistente/mensaje`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mensajeid:               nuevoMensaje.mensajeid,
+          mensajeentrada:          texto,
+          historialconversacionid: historialconversacionid,
+        }),
+      });
+
+      // 4. Recarga para mostrar la respuesta del backend
+      if (id) await fetchHistorial(id);
+
+    } catch (err) {
+      console.error("Error al contactar el backend:", err);
+    }
 
     setEnviando(false);
   };
@@ -181,9 +202,8 @@ const AsistenteVirtual = () => {
     enviando ||
     !historialconversacionid ||
     (historial.length > 0 &&
-      historial[historial.length - 1].mensajesalida === null); // ✅ antes asistentesalida
+      historial[historial.length - 1].mensajesalida === null);
 
-  // ── Render ────────────────────────────────────────────────────────────────
   return (
     <>
       <button className={style.btnChat} onClick={handleAbrir}>
@@ -212,21 +232,18 @@ const AsistenteVirtual = () => {
           {/* BODY */}
           <div className={style.chatBody} ref={bodyRef}>
             <span>Asistente:</span>
-
             <div className={style.mensajeBot}>
               Bienvenido a Gorrioncito, tu asistente virtual. ¿En qué te podemos ayudar?
             </div>
 
             {historial.map((conv) => (
-              <div key={conv.mensajeid}>                {/* ✅ antes asistenteid */}
+              <div key={conv.mensajeid}>
 
-                {/* Mensaje del usuario */}
                 <div className={style.mensajeUser}>
-                  {conv.mensajeentrada}               {/* ✅ antes asistenteentrada */}
+                  {conv.mensajeentrada}
                 </div>
 
-                {/* Respuesta o indicador de espera */}
-                {conv.mensajesalida ? (               /* ✅ antes asistentesalida */
+                {conv.mensajesalida ? (
                   <>
                     <div className={style.mensajeBot}>
                       {conv.mensajesalida}
