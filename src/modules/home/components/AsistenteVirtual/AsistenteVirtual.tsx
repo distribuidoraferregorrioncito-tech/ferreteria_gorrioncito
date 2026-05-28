@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import style from "./AsistenteVirtual.module.css";
 import { images } from "../../../../assets/img/index";
 import { supabase } from "../../../../lib/supabase";
+import { icon } from "../../../../core/icons";
 
 const BACKEND_URL = "http://127.0.0.1:8000";
 
@@ -15,7 +16,7 @@ interface Conversacion {
 interface ProductoRecomendado {
   recomendarproductoid: number;
   recomendarproductonombre: string;
-  imagen_url: string | null;
+  imagen_url: string | null;  
 }
 
 const AsistenteVirtual = () => {
@@ -60,7 +61,7 @@ const AsistenteVirtual = () => {
         .single();
 
       resultados.push({
-        recomendarproductoid:    rec.recomendarproductoid,
+        recomendarproductoid:     rec.recomendarproductoid,
         recomendarproductonombre: rec.recomendarproductonombre,
         imagen_url: producto ? obtenerImagenUrl(producto.prdcimgnombrebucket) : null,
       });
@@ -89,7 +90,6 @@ const AsistenteVirtual = () => {
     setHistorial(historialConProductos);
   }, []);
 
-  // ── Polling cada 3 segundos ───────────────────────────────────────────────
   useEffect(() => {
     if (!open || !historialconversacionid) return;
 
@@ -110,7 +110,6 @@ const AsistenteVirtual = () => {
     }
   }, [historial]);
 
-  // ── Abrir chat: crea historial con modo automático ────────────────────────
   const handleAbrir = async () => {
     if (open) return;
     setCargando(true);
@@ -120,7 +119,7 @@ const AsistenteVirtual = () => {
       .from("historial_conversacion")
       .insert({
         historialtitulo: "nueva conversación",
-        modorespuesta:   "automatico",        // ✅ nuevo campo
+        modorespuesta:   "automatico",
       })
       .select("historialconversacionid")
       .single();
@@ -145,7 +144,6 @@ const AsistenteVirtual = () => {
     setEnviando(false);
   };
 
-  // ── Enviar mensaje ────────────────────────────────────────────────────────
   const handleEnviar = async () => {
     const texto = mensaje.trim();
     if (!texto || enviando || !historialconversacionid) return;
@@ -156,7 +154,6 @@ const AsistenteVirtual = () => {
     setMensaje("");
     setEnviando(true);
 
-    // 1. Inserta el mensaje en Supabase → obtiene mensajeid
     const { data: nuevoMensaje, error } = await supabase
       .from("mensaje")
       .insert({
@@ -171,11 +168,9 @@ const AsistenteVirtual = () => {
       return;
     }
 
-    // 2. Recarga para mostrar el mensaje + loader animado
     const id = convIdRef.current;
     if (id) await fetchHistorial(id);
 
-    // 3. Envía al backend con mensajeid + texto + historialid
     try {
       await fetch(`${BACKEND_URL}/asistente/mensaje`, {
         method:  "POST",
@@ -187,9 +182,7 @@ const AsistenteVirtual = () => {
         }),
       });
 
-      // 4. Recarga para mostrar la respuesta del backend
       if (id) await fetchHistorial(id);
-
     } catch (err) {
       console.error("Error al contactar el backend:", err);
     }
@@ -206,34 +199,37 @@ const AsistenteVirtual = () => {
 
   return (
     <>
-      <button className={style.btnChat} onClick={handleAbrir}>
-        💬
-      </button>
+      {!open && (
+        <button className={style.btnAbrir} onClick={handleAbrir}>
+          💬
+        </button>
+      )}
 
       {open && (
         <div className={style.chatModal}>
 
           {/* HEADER */}
           <div className={style.chatHeader}>
-            <div className={style.tituloContainer}>
-              <div className={style.logo}>
+            <div className={style.headerContent}>
+              <div className={style.headerLogo}>
                 <img src={images.logoGorrion} alt="Logo" />
               </div>
-              <div className={style.titulos}>
+              <div className={style.headerTitles}>
                 <h2>Asistente Virtual</h2>
-                <div className={style.subtitulo}>
-                  <h1>GORRIONCITO</h1>
-                </div>
+                <h1>GORRIONCITO</h1>
               </div>
             </div>
-            <button className={style.closeBtn} onClick={handleCerrar}>✖</button>
+            <button className={style.btnCerrar} onClick={handleCerrar}>✖</button>
           </div>
 
           {/* BODY */}
           <div className={style.chatBody} ref={bodyRef}>
-            <span>Asistente:</span>
-            <div className={style.mensajeBot}>
-              Bienvenido a Gorrioncito, tu asistente virtual. ¿En qué te podemos ayudar?
+
+            <div className={style.botRow}>
+              <img src={images.perfilAsistente} alt="Asistente" className={style.botAvatar} />
+              <div className={style.mensajeBot}>
+                Bienvenido a Gorrioncito, tu asistente virtual. ¿En qué te podemos ayudar?
+              </div>
             </div>
 
             {historial.map((conv) => (
@@ -245,8 +241,11 @@ const AsistenteVirtual = () => {
 
                 {conv.mensajesalida ? (
                   <>
-                    <div className={style.mensajeBot}>
-                      {conv.mensajesalida}
+                    <div className={style.botRow}>
+                      <img src={images.perfilAsistente} alt="Asistente" className={style.botAvatar} />
+                      <div className={style.mensajeBot}>
+                        {conv.mensajesalida}
+                      </div>
                     </div>
 
                     {conv.recomendarproducto &&
@@ -265,11 +264,14 @@ const AsistenteVirtual = () => {
                         </div>
                       )}
                   </>
-                ) : (
-                  <div className={`${style.mensajeBot} ${style.pensando}`}>
-                    <span /><span /><span />
-                  </div>
-                )}
+                  ) : (
+                    <div className={style.botRow}>
+                      <img src={images.perfilAsistente} alt="Asistente" className={style.botAvatar} />
+                      <div className={`${style.mensajeBot} ${style.pensando}`}>
+                        <span /><span /><span />
+                      </div>
+                    </div>
+                  )}
 
               </div>
             ))}
@@ -279,15 +281,15 @@ const AsistenteVirtual = () => {
           <div className={style.chatFooter}>
             <input
               type="text"
-              placeholder={
-                cargando ? "Iniciando conversación..." : "Escribe tu mensaje..."
-              }
+              placeholder={cargando ? "Iniciando conversación..." : "Escribe tu mensaje..."}
               value={mensaje}
               onChange={(e) => setMensaje(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") handleEnviar(); }}
               disabled={inputBloqueado}
             />
-            <button onClick={handleEnviar} disabled={inputBloqueado}>➤</button>
+            <button onClick={handleEnviar} disabled={inputBloqueado}>
+              <img src={images.enviar} alt="Enviar" />
+            </button>
           </div>
 
         </div>

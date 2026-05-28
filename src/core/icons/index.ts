@@ -7,6 +7,7 @@ import { iconCarrito } from "./carrito";
 import { iconLupa } from "./lupa";
 import { iconDni } from "./dni";
 import { iconArrowDown } from "./arrowdown"
+// import { iconEnviar } from "./enviar";
 
 export const icon = {
   iconHojaPaper,
@@ -17,5 +18,6 @@ export const icon = {
   iconCarrito,
   iconLupa,
   iconDni,
-  iconArrowDown
+  iconArrowDown,
+  // iconEnviar
 };
