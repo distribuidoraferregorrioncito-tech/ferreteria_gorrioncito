@@ -3,7 +3,7 @@ import style from "./NavBarCategoria.module.css";
 import { icon } from "../../../../core/icons";
 
 import {
-  listarProducto,
+  listarProductos,
   getImagenProducto,
   listarProductosPorCategoria
 } from "../../../../core/services/producto.service";
@@ -134,50 +134,39 @@ export const NavBarCategoria = () => {
 
   // ─── Cargar productos por categoría ──────────────────────────────────────
 
-  const cargarProductosPorCategoria = async (categoria: string) => {
-    try {
-      setCargandoProductos(true);
+ const cargarProductosPorCategoria = async (categoria: string) => {
+  try {
+    setCargandoProductos(true);
 
-      const cacheKey       = `${CACHE_PRODUCTOS_PREFIX}${categoria}`;
-      const productosCache = localStorage.getItem(cacheKey);
-
-      if (productosCache) {
-        setProductosCatalogo(JSON.parse(productosCache));
-        return;
-      }
-
-      const LIMITE = 100;
-      let pagina = 1;
-      let todos: CatalogProduct[] = [];
-      let hayMas = true;
-
-      while (hayMas) {
-        const lote = await listarProductosPorCategoria(categoria, pagina, LIMITE);
-
-        const transformados: CatalogProduct[] = lote.map((producto) => ({
-          id:          producto.prdcid,
-          titulo:      producto.prdcimgnombre,
-          categoria:   producto.categoria?.ctgraimgnombre || "",
-          marca:       producto.marca?.marcaimgnombre      || "",
-          marcaImagen: producto.marca?.marcaimgnombrebucket
-            ? getImagenMarca(producto.marca.marcaimgnombrebucket)
-            : "",
-          imagen: getImagenProducto(producto.prdcimgnombrebucket),
-        }));
-
-        todos  = [...todos, ...transformados];
-        hayMas = lote.length === LIMITE;
-        pagina++;
-      }
-
-      localStorage.setItem(cacheKey, JSON.stringify(todos));
-      setProductosCatalogo(todos);
-
-    } finally {
-      setCargandoProductos(false);
+    const cacheKey = `${CACHE_PRODUCTOS_PREFIX}${categoria}`;
+    const productosCache = localStorage.getItem(cacheKey);
+    if (productosCache) {
+      setProductosCatalogo(JSON.parse(productosCache));
+      return;
     }
-  };
 
+    const lote = await listarProductosPorCategoria(categoria);
+
+    const transformados: CatalogProduct[] = lote.map((producto) => ({
+      id:          producto.prdcid,
+      titulo:      producto.prdcnombre,
+      categoria:   producto.categoria?.ctgranombre  ?? "",
+      marca:       producto.marca?.marcanombre       ?? "",
+      marcaImagen: producto.marca?.marcaimgnombrebucket
+        ? getImagenMarca(producto.marca.marcaimgnombrebucket)
+        : "",
+      imagen: producto.prdcimgnombrebucket
+        ? getImagenProducto(producto.prdcimgnombrebucket)
+        : "",
+    }));
+
+    localStorage.setItem(cacheKey, JSON.stringify(transformados));
+    setProductosCatalogo(transformados);
+
+  } finally {
+    setCargandoProductos(false);
+  }
+};
   // ─── Escuchar cambio de categoría ────────────────────────────────────────
 
   useEffect(() => {

@@ -6,6 +6,7 @@ import {
   listarProductos,
   listarProductosPorCategoria,
   listarProductosPorMarca,
+  listarProductosFiltrados 
 } from "../../../../core/services/producto.service";
 import type { Producto } from "../../../../core/types";
 
@@ -72,57 +73,39 @@ export default function Seccion_3({
 
   // ── Carga de productos ────────────────────────────────────────────────────
 
-  useEffect(() => {
-    const cargar = async () => {
-      setCargando(true);
-      try {
-        const tieneCategorias = categoriasSeleccionadas.length > 0;
-        const tieneMarcas     = marcasSeleccionadas.length > 0;
+useEffect(() => {
+  let cancelado = false; // ← flag
 
-        if (!tieneCategorias && !tieneMarcas) {
-          setProductos(await listarProductos());
-          return;
-        }
+  const cargar = async () => {
+    setCargando(true);
+    try {
+      const data = await listarProductosFiltrados(
+        categoriasSeleccionadas,
+        marcasSeleccionadas,
+        busquedaGeneral
+      );
 
-        const porCategorias = tieneCategorias
-          ? deduplicar(await Promise.all(categoriasSeleccionadas.map(listarProductosPorCategoria)))
-          : [];
+      if (cancelado) return; // ← si ya hay una llamada más nueva, ignorar esta
+      
+      setProductos(data);
+    } catch (err) {
+      if (cancelado) return;
+      console.error("Error cargando productos:", err);
+      setProductos([]);
+    } finally {
+      if (!cancelado) setCargando(false);
+    }
+  };
 
-        const porMarcas = tieneMarcas
-          ? deduplicar(await Promise.all(marcasSeleccionadas.map(listarProductosPorMarca)))
-          : [];
+  cargar();
 
-        if (tieneCategorias && tieneMarcas) {
-          const idsMarcas = new Set(porMarcas.map((p) => p.prdcid));
-          setProductos(porCategorias.filter((p) => idsMarcas.has(p.prdcid)));
-        } else {
-          setProductos(tieneCategorias ? porCategorias : porMarcas);
-        }
-      } catch (err) {
-        console.error("Error cargando productos:", err);
-        setProductos([]);
-      } finally {
-        setCargando(false);
-      }
-    };
-
-    cargar();
-  }, [categoriasSeleccionadas, marcasSeleccionadas]);
-
+  return () => {
+    cancelado = true; // ← cuando el efecto vuelve a correr, cancela el anterior
+  };
+}, [categoriasSeleccionadas, marcasSeleccionadas, busquedaGeneral]);
   // ── Filtrado local por búsqueda ───────────────────────────────────────────
 
-  const productosFiltrados = useMemo(() => {
-    const hayFiltros = categoriasSeleccionadas.length > 0 || marcasSeleccionadas.length > 0;
-    if (hayFiltros || !busquedaGeneral.trim()) return productos;
-
-    const q = busquedaGeneral.toLowerCase().trim();
-    return productos.filter(
-      (p) =>
-        p.prdcnombre?.toLowerCase().includes(q) ||
-        p.categoria?.ctgranombre?.toLowerCase().includes(q) ||
-        p.marca?.marcanombre?.toLowerCase().includes(q)
-    );
-  }, [productos, categoriasSeleccionadas, marcasSeleccionadas, busquedaGeneral]);
+const productosFiltrados = productos;
 
   const productosRenderizados = useMemo(
     () => productosFiltrados.slice(0, productosVisibles),

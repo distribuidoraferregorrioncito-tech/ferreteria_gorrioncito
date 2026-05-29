@@ -6,9 +6,6 @@ import Seccion_1 from "../components/seccion_1/seccion_1";
 import Seccion_2 from "../components/seccion_2/seccion_2";
 import Seccion_3 from "../components/seccion_3/seccion_3";
 
-import { listarProductos } from "../../../core/services/producto.service";
-import { Producto } from "../../../core/types";
-
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const normalizarNombre = (nombre: string | undefined | null, fallback: string) =>
@@ -28,71 +25,48 @@ const INITIAL_VISIBLE = 40;
 export default function ProductPage() {
   const [searchParams] = useSearchParams();
 
-  const [productos,               setProductos]               = useState<Producto[]>([]);
   const [categoriasSeleccionadas, setCategoriasSeleccionadas] = useState<string[]>([]);
   const [marcasSeleccionadas,     setMarcasSeleccionadas]     = useState<string[]>([]);
   const [busquedaGeneral,         setBusquedaGeneral]         = useState("");
   const [productosVisibles,       setProductosVisibles]       = useState(INITIAL_VISIBLE);
   const [sidebarAbierto,          setSidebarAbierto]          = useState(false);
 
-  const queryUrl          = searchParams.get("q")?.trim()         ?? "";
-  const categoriaDesdeUrl = searchParams.get("categoria")?.trim() ?? "";
-  const marcaDesdeUrl     = searchParams.get("marca")?.trim()     ?? "";
+  const queryUrl             = searchParams.get("q")?.trim()         ?? "";
+  const categoriaDesdeUrl    = searchParams.get("categoria")?.trim() ?? "";
+  const marcasDesdeUrl = searchParams.get("marca")
+  ?.split(",")
+  .map((m) => m.trim())
+  .filter(Boolean) ?? [];
   const abrirFiltrosDesdeUrl = searchParams.get("filtros") === "1";
 
-  // ── Carga inicial ────────────────────────────────────────────────────────
-
   useEffect(() => {
-    listarProductos()
-      .then((data) => startTransition(() => setProductos(data)))
-      .catch((err) => console.error("Error cargando productos:", err));
-  }, []);
+    if (abrirFiltrosDesdeUrl) setSidebarAbierto(true);
+  }, [abrirFiltrosDesdeUrl]);
+
+  // ── Sincronizar URL → filtros ─────────────────────────────────────────
 useEffect(() => {
-  if (abrirFiltrosDesdeUrl) {
-    setSidebarAbierto(true);
+  if (categoriaDesdeUrl || marcasDesdeUrl.length > 0) {
+    setCategoriasSeleccionadas(categoriaDesdeUrl ? [categoriaDesdeUrl] : []);
+    setMarcasSeleccionadas(marcasDesdeUrl);  // ← ya es array
+    setBusquedaGeneral("");
+    return;
   }
-}, [abrirFiltrosDesdeUrl]);
-  // ── Listas únicas disponibles ─────────────────────────────────────────────
-
-  const categoriasDisponibles = useMemo(
-    () =>
-      Array.from(new Set(productos.map((p) => normalizarNombre(p.categoria?.ctgranombre, "")))).filter(Boolean),
-    [productos]
-  );
-
-  const marcasDisponibles = useMemo(
-    () =>
-      Array.from(new Set(productos.map((p) => normalizarNombre(p.marca?.marcanombre, "")))).filter(Boolean),
-    [productos]
-  );
-
-  // ── Sincronizar URL → filtros ────────────────────────────────────────────
-
-  useEffect(() => {
-    if (categoriaDesdeUrl || marcaDesdeUrl) {
-      setCategoriasSeleccionadas(categoriaDesdeUrl ? [categoriaDesdeUrl] : []);
-      setMarcasSeleccionadas(marcaDesdeUrl ? [marcaDesdeUrl] : []);
-      setBusquedaGeneral("");
-      return;
-    }
-    if (!queryUrl) {
-      setCategoriasSeleccionadas([]);
-      setMarcasSeleccionadas([]);
-      setBusquedaGeneral("");
-      return;
-    }
+  if (!queryUrl) {
+    console.log("→ reseteando todo (queryUrl vacío)");
     setCategoriasSeleccionadas([]);
     setMarcasSeleccionadas([]);
-    setBusquedaGeneral(queryUrl);
-  }, [queryUrl, categoriaDesdeUrl, marcaDesdeUrl]);
-
-  // ── Resetear paginación ───────────────────────────────────────────────────
+    setBusquedaGeneral("");
+    return;
+  }
+  console.log("→ seteando busquedaGeneral:", queryUrl);
+  setCategoriasSeleccionadas([]);
+  setMarcasSeleccionadas([]);
+  setBusquedaGeneral(queryUrl);
+}, [queryUrl, categoriaDesdeUrl, marcasDesdeUrl.join(",")]); 
 
   useEffect(() => {
     setProductosVisibles(INITIAL_VISIBLE);
   }, [busquedaGeneral, categoriasSeleccionadas, marcasSeleccionadas]);
-
-  // ── Handlers ─────────────────────────────────────────────────────────────
 
   const toggleCategoria = (cat: string) =>
     setCategoriasSeleccionadas((prev) =>
@@ -104,15 +78,10 @@ useEffect(() => {
       prev.includes(mar) ? prev.filter((m) => m !== mar) : [...prev, mar]
     );
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
   return (
     <div className={styles.page}>
-      <Seccion_1 />
-
+      <Seccion_1 onMarcaSeleccionada={toggleMarca} />
       <div className={styles.layout}>
-
-        {/* Panel lateral — desktop siempre visible, mobile oculto */}
         <Seccion_2
           categoriasSeleccionadas={categoriasSeleccionadas}
           marcasSeleccionadas={marcasSeleccionadas}
@@ -120,24 +89,16 @@ useEffect(() => {
           onMarcaSeleccionada={toggleMarca}
         />
 
-        {/* Sidebar drawer — solo mobile */}
         {sidebarAbierto && (
           <>
-            <div
-              className={styles.sidebarOverlay}
-              onClick={() => setSidebarAbierto(false)}
-            />
+            <div className={styles.sidebarOverlay} onClick={() => setSidebarAbierto(false)} />
             <aside className={styles.sidebarDrawer}>
               <Seccion_2
-                enDrawer={true}          
+                enDrawer={true}
                 categoriasSeleccionadas={categoriasSeleccionadas}
                 marcasSeleccionadas={marcasSeleccionadas}
-                onCategoriaSeleccionada={(cat) => {
-                  toggleCategoria(cat);
-                }}
-                onMarcaSeleccionada={(mar) => {
-                  toggleMarca(mar);
-                }}
+                onCategoriaSeleccionada={toggleCategoria}
+                onMarcaSeleccionada={toggleMarca}
               />
             </aside>
           </>
@@ -153,7 +114,6 @@ useEffect(() => {
           onCargarMas={() => setProductosVisibles((prev) => prev + INITIAL_VISIBLE)}
           onAbrirFiltros={() => setSidebarAbierto(true)}
         />
-
       </div>
     </div>
   );

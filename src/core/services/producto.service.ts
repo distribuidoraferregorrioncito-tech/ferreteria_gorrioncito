@@ -276,6 +276,10 @@ export const buscarProductosPorNombre = async (query: string): Promise<Producto[
   if (error) { console.error(error); return []; }
   return data as Producto[];
 };
+
+// ///////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////     listarProductosPorCategoria     //////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////
 export const listarProductosPorCategoria = async (
   categoria: string
 ): Promise<Producto[]> => {
@@ -313,6 +317,9 @@ export const listarProductosPorCategoria = async (
   return todos;
 };
 
+// ///////////////////////////////////////////////////////////////////////////////////////
+// /////////////////////////     listarProductosPorMarca     //////////////////////////
+// ///////////////////////////////////////////////////////////////////////////////////////
 export const listarProductosPorMarca = async (
   marca: string
 ): Promise<Producto[]> => {
@@ -348,4 +355,64 @@ export const listarProductosPorMarca = async (
   }
 
   return todos;
+};
+
+export const listarProductosFiltrados = async (
+  categorias: string[] = [],
+  marcas:     string[] = [],
+  busqueda:   string   = ""
+): Promise<Producto[]> => {
+  try {
+    // Resolver IDs de categorías
+    let ctgraIds: number[] | null = null;
+    if (categorias.length > 0) {
+      const { data, error } = await supabase
+        .from("categoria")
+        .select("ctgraid")
+        .in("ctgranombre", categorias);  // o usar ilike si necesitas case-insensitive
+      if (error) { console.error(error); return []; }
+      ctgraIds = data.map((c) => c.ctgraid);
+    }
+
+    // Resolver IDs de marcas
+    let marcaIds: number[] | null = null;
+    if (marcas.length > 0) {
+      const { data, error } = await supabase
+        .from("marca")
+        .select("marcaid")
+        .in("marcanombre", marcas);
+      if (error) { console.error(error); return []; }
+      marcaIds = data.map((m) => m.marcaid);
+    }
+
+    // Query principal con todos los filtros
+    const PAGE_SIZE = 1000;
+    let todos: Producto[] = [];
+    let desde = 0;
+
+    while (true) {
+      let query = supabase
+        .from("producto")
+        .select(SELECT_PRODUCTO)
+        .order("prdcid", { ascending: true })
+        .range(desde, desde + PAGE_SIZE - 1);
+
+      if (ctgraIds)        query = query.in("ctgraid",  ctgraIds);
+      if (marcaIds)        query = query.in("marcaid",  marcaIds);
+      if (busqueda.trim()) query = query.ilike("prdcnombre", `%${busqueda.trim()}%`);
+
+      const { data, error } = await query;
+      if (error) { console.error(error); break; }
+      if (!data || data.length === 0) break;
+
+      todos = [...todos, ...data];
+      if (data.length < PAGE_SIZE) break;
+      desde += PAGE_SIZE;
+    }
+
+    return todos;
+  } catch (err) {
+    console.error("Error general:", err);
+    return [];
+  }
 };

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import style from "./seccion_3.module.css";
 
@@ -7,7 +8,12 @@ import {
 } from "../../../../core/services/marca.service";
 import { Marca } from "../../../../core/types";
 
-const Seccion_3 = () => {
+type Props = {
+  onMarcaSeleccionada?: (marca: string) => void;
+};
+
+const Seccion_3 = ({ onMarcaSeleccionada }: Props) => {
+  const navigate = useNavigate();
   const [marcas, setMarcas] = useState<Marca[]>([]);
 
   useEffect(() => {
@@ -48,7 +54,16 @@ const Seccion_3 = () => {
             `Marca ${marca.marcaid}`;
 
           return (
-            <article key={`${marca.marcaid}-${index}`} className={style.card}>
+            <article
+              key={`${marca.marcaid}-${index}`}
+              className={style.card}
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: "instant" });
+                navigate(`/product?marca=${encodeURIComponent(nombre)}`);
+                onMarcaSeleccionada?.(nombre);
+              }}
+              style={{ cursor: "pointer" }}
+            >
               {imagen ? (
                 <img src={imagen} alt={nombre} className={style.imagen} />
               ) : (

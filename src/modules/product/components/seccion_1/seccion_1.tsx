@@ -1,3 +1,4 @@
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useEffect, useMemo, useRef, useState } from "react";
 import styles from "./seccion_1.module.css";
 import { supabase } from "../../../../lib/supabase";
@@ -13,6 +14,10 @@ type MarcaItem = {
   imagen: string;
 };
 
+type Props = {
+  onMarcaSeleccionada?: (marca: string) => void;
+};
+
 function buildDisplayName(rawName: string | null, fallback: string) {
   const source = rawName || fallback;
   if (!source) return "Marca";
@@ -24,8 +29,11 @@ function buildDisplayName(rawName: string | null, fallback: string) {
   return normalized.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
-export default function Seccion_1() {
+export default function Seccion_1({ onMarcaSeleccionada }: Props) {
+  // quita useNavigate y useSearchParams, ya no los necesitas
   const [pausado, setPausado] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [direccion, setDireccion] = useState<"normal" | "reverse">("normal");
   const [marcas, setMarcas] = useState<MarcaItem[]>([]);
   const pistaRef = useRef<HTMLDivElement>(null);
@@ -92,7 +100,12 @@ export default function Seccion_1() {
             style={{ animationDirection: direccion }}
           >
             {marcasLoop.map((marca, index) => (
-              <article key={`${marca.id}-${index}`} className={styles.logoCard}>
+              <article
+                key={`${marca.id}-${index}`}
+                className={styles.logoCard}
+                onClick={() => onMarcaSeleccionada?.(marca.nombre)}
+                style={{ cursor: "pointer" }}
+              >
                 {marca.imagen ? (
                   <img
                     src={marca.imagen}

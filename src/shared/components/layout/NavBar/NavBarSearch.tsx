@@ -3,7 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import style from "./NavBarSearch.module.css";
 import { icon } from "../../../../core/icons";
 
-import { clasificarBusquedaCatalogo } from "../../../../core/services/index";
+import { clasificarBusquedaCatalogo, type ResultadoBusqueda } from "../../../../core/services/index";
 
 export const NavBarSearch = () => {
   const navigate = useNavigate();
@@ -12,7 +12,14 @@ export const NavBarSearch = () => {
   const [cargando, setCargando] = useState(false);
 
   useEffect(() => {
-    setBusquedaNavbar(searchParams.get("q") ?? "");
+    const q        = searchParams.get("q")        ?? "";
+    const categoria = searchParams.get("categoria") ?? "";
+    const marca     = searchParams.get("marca")     ?? "";
+
+    if (q)               setBusquedaNavbar(q);
+    else if (marca)      setBusquedaNavbar(marca);
+    else if (categoria)  setBusquedaNavbar(categoria);
+    // ← NO limpiar en el else, dejar el input como está
   }, [searchParams]);
 
   const manejarSubmitBusqueda = async (event: FormEvent<HTMLFormElement>) => {
@@ -25,27 +32,32 @@ export const NavBarSearch = () => {
     }
 
     setCargando(true);
+    let resultado: ResultadoBusqueda;
+    
     try {
-      const resultado = await clasificarBusquedaCatalogo(query);
-
-      switch (resultado.tipo) {
-        case "marca":
-          navigate(`/product?marca=${encodeURIComponent(resultado.valor)}`);
-          break;
-        case "categoria":
-          navigate(`/product?categoria=${encodeURIComponent(resultado.valor)}`);
-          break;
-        case "producto":
-        case "sin_resultado":
-          navigate(`/product?q=${encodeURIComponent(resultado.valor)}`);
-          break;
-      }
+      resultado = await clasificarBusquedaCatalogo(query);
     } catch (err) {
       console.error("Error al clasificar búsqueda:", err);
       navigate(`/product?q=${encodeURIComponent(query)}`);
-    } finally {
-      setCargando(false);
+      setCargando(false); // ← mover aquí, no en finally
+      return;
     }
+
+    // Navigate ANTES de setCargando(false) para evitar re-renders intermedios
+    switch (resultado.tipo) {
+      case "marca":
+        navigate(`/product?marca=${encodeURIComponent(resultado.valor)}`);
+        break;
+      case "categoria":
+        navigate(`/product?categoria=${encodeURIComponent(resultado.valor)}`);
+        break;
+      case "producto":
+      case "sin_resultado":
+        navigate(`/product?q=${encodeURIComponent(resultado.valor)}`);
+        break;
+    }
+
+    setCargando(false); // ← DESPUÉS del navigate, no en finally
   };
 
   return (
