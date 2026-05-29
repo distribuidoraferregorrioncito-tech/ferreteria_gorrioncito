@@ -5,7 +5,9 @@ import { icon } from "./../../../../core/icons/";
 export default function Seccion_1() {
   return (
     <section className={styles.seccion}>
-      <div className={styles.contenido}>
+      <div className={styles.wrapper}>
+
+        {/* Texto */}
         <div className={styles.texto}>
           <h2 className={styles.titulo}>QUIENES SOMOS</h2>
           <p className={styles.subtitulo}>
@@ -19,7 +21,7 @@ export default function Seccion_1() {
             industrias.
           </p>
 
-          <div className={styles.resumenes}>
+          <div className={styles.resumenGrid}>
             <div className={styles.resumenCard}>
               <strong>Atencion directa</strong>
               <span>Respuesta agil para cotizaciones y consultas comerciales.</span>
@@ -30,17 +32,16 @@ export default function Seccion_1() {
             </div>
           </div>
 
-          <div className={styles.contactos}>
+          <div className={styles.contactoGrid}>
             <div className={styles.contactoCard}>
-            {icon.iconTelefono({ className: styles.iconoTelefono })}
+              {icon.iconTelefono({ className: styles.contactoIcono })}
               <div>
                 <h3>Contactanos</h3>
                 <p>915 144 663</p>
               </div>
             </div>
-
             <div className={styles.contactoCard}>
-            {icon.iconCorreo({ className: styles.iconoTelefono })}
+              {icon.iconCorreo({ className: styles.contactoIcono })}
               <div>
                 <h3>Correo</h3>
                 <p>distribuidoraferrorgorrioncito@gmail.com</p>
@@ -48,6 +49,8 @@ export default function Seccion_1() {
             </div>
           </div>
         </div>
+
+        {/* Imagen */}
         <div className={styles.visual}>
           <img
             src={images.FLYER2}
@@ -55,6 +58,7 @@ export default function Seccion_1() {
             className={styles.imagen}
           />
         </div>
+
       </div>
     </section>
   );
