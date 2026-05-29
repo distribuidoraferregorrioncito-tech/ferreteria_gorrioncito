@@ -1,0 +1,22 @@
+.page {
+  width: 100%;
+}
+
+.layout {
+  display: flex;
+  width: 100%;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .layout {
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .layout > * {
+    width: 100%;
+  }
+}

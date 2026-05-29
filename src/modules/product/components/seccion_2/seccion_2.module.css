@@ -1,5 +1,7 @@
-.sidebar {
+/* ── Contenedor raíz ──────────────────────────────────── */
+.seccion {
   width: 240px;
+  flex-shrink: 0;
   border-radius: 22px;
   background: linear-gradient(180deg, #ffffff 0%, #f6f8ff 100%);
   border: 1px solid rgba(60, 79, 164, 0.1);
@@ -7,6 +9,7 @@
   overflow: hidden;
 }
 
+/* ── Tabs ─────────────────────────────────────────────── */
 .tabs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -24,10 +27,7 @@
   font-weight: 800;
   padding: 11px 8px;
   cursor: pointer;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .tabActiva {
@@ -36,8 +36,9 @@
   box-shadow: 0 8px 18px rgba(36, 53, 133, 0.14);
 }
 
+/* ── Buscador ─────────────────────────────────────────── */
 .searchBox {
-  margin: 0 12px;
+  margin: 12px 12px 0;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -47,9 +48,10 @@
   background: #ffffff;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
-.modalSvg{
-  width:20px;
-  height:20px;
+
+.modalSvg {
+  width: 20px;
+  height: 20px;
   color: #5a6278;
 }
 
@@ -66,19 +68,71 @@
   color: #9ba4be;
 }
 
+/* ── Lista ────────────────────────────────────────────── */
 .lista {
   height: 520px;
   overflow-y: auto;
   padding: 14px 14px 16px;
 }
 
+/* Fila del título con botón toggle */
+.tituloRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
 .titulo {
-  margin: 0 0 12px;
+  margin: 0;
   color: #1d2652;
   font-size: 16px;
   font-weight: 800;
 }
 
+/* Botón toggle: oculto en desktop, visible en mobile */
+.toggleBtn {
+  display: none;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  color: #243585;
+  transition: transform 0s; /* instantáneo */
+}
+
+.toggleSvg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  transition: transform 0s; /* instantáneo */
+}
+
+.toggleAbierto .toggleSvg,
+.toggleAbierto > .toggleSvg {
+  transform: rotate(180deg);
+}
+
+/* El propio botón rota el SVG cuando tiene la clase toggleAbierto */
+.toggleBtn.toggleAbierto .toggleSvg {
+  transform: rotate(180deg);
+}
+
+/* Items: visibilidad controlada */
+.listaItems {
+  display: flex;
+  flex-direction: column;
+}
+
+.listaVisible {
+  display: flex;
+}
+
+.listaOculta {
+  display: none;
+}
+
+/* ── Item individual ──────────────────────────────────── */
 .item {
   width: 100%;
   display: flex;
@@ -92,10 +146,7 @@
   padding: 9px 10px;
   cursor: pointer;
   text-align: left;
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
 }
 
 .item:hover {
@@ -110,53 +161,26 @@
   font-weight: 800;
 }
 
-@media (max-width: 900px) {
-  .sidebar {
-    width: 100%;
-  }
-
-  .lista {
-    height: auto;
-    max-height: 320px;
-  }
+.sinResultados {
+  color: #9ba4be;
+  font-size: 13px;
+  margin: 0;
 }
 
-@media (max-width: 640px) {
-  .sidebar {
-    border-radius: 20px;
-  }
-
-  .tabs {
-    gap: 8px;
-    padding: 10px;
-  }
-
-  .tab {
-    min-height: 42px;
-    font-size: 13px;
-    padding: 10px 6px;
-  }
-
-  .searchBox {
-    margin: 0 10px;
-    padding: 10px 12px;
-    border-radius: 14px;
+/* ── Mobile ───────────────────────────────────────────── */
+@media (max-width: 767px) {
+  .seccion {
+    width: 100%;
+    max-width: 100%;
   }
 
   .lista {
-    padding: 12px 10px 14px;
-    max-height: 280px;
+    height: auto; /* se adapta al contenido colapsado */
   }
 
-  .titulo {
-    margin-bottom: 10px;
-    font-size: 15px;
-  }
-
-  .item {
-    min-height: 44px;
-    padding: 10px 12px;
-    border-radius: 12px;
-    font-size: 13px;
+  .toggleBtn {
+    display: flex; /* visible solo en mobile */
+    align-items: center;
+    justify-content: center;
   }
 }

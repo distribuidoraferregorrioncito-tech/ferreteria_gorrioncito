@@ -1,3 +1,5 @@
+import styles from "./ProductPage.module.css";
+
 import { startTransition, useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -101,26 +103,30 @@ useEffect(() => {
       prev.includes(mar) ? prev.filter((m) => m !== mar) : [...prev, mar]
     );
 
-  return (
-    <div>
-      <Seccion_1 />
-      <div style={{ display: "flex" }}>
-        <Seccion_2
-          categoriasSeleccionadas={categoriasSeleccionadas}
-          marcasSeleccionadas={marcasSeleccionadas}
-          onCategoriaSeleccionada={toggleCategoria}
-          onMarcaSeleccionada={toggleMarca}
-        />
-        <Seccion_3
-          categoriasSeleccionadas={categoriasSeleccionadas}
-          marcasSeleccionadas={marcasSeleccionadas}
-          busquedaGeneral={busquedaGeneral}
-          onEliminarCategoria={toggleCategoria}
-          onEliminarMarca={toggleMarca}
-          productosVisibles={productosVisibles}
-          onCargarMas={() => setProductosVisibles((prev) => prev + INITIAL_VISIBLE)}
-        />
-      </div>
+return (
+  <div className={styles.page}>
+    <Seccion_1 />
+
+    <div className={styles.layout}>
+      <Seccion_2
+        categoriasSeleccionadas={categoriasSeleccionadas}
+        marcasSeleccionadas={marcasSeleccionadas}
+        onCategoriaSeleccionada={toggleCategoria}
+        onMarcaSeleccionada={toggleMarca}
+      />
+
+      <Seccion_3
+        categoriasSeleccionadas={categoriasSeleccionadas}
+        marcasSeleccionadas={marcasSeleccionadas}
+        busquedaGeneral={busquedaGeneral}
+        onEliminarCategoria={toggleCategoria}
+        onEliminarMarca={toggleMarca}
+        productosVisibles={productosVisibles}
+        onCargarMas={() =>
+          setProductosVisibles((prev) => prev + INITIAL_VISIBLE)
+        }
+      />
     </div>
-  );
-}
+  </div>
+);
+};

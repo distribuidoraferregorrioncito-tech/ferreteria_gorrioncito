@@ -1,24 +1,20 @@
 import { useEffect, useMemo, useState } from "react";
 import styles from "./seccion_3.module.css";
 import { icon } from "../../../../core/icons";
-
 import {
   getImagenProducto,
   listarProductos,
   listarProductosPorCategoria,
   listarProductosPorMarca,
 } from "../../../../core/services/producto.service";
-
-import type { Producto } from "../../../../core/types"
+import type { Producto } from "../../../../core/types";
 
 type Props = {
   categoriasSeleccionadas?: string[];
   marcasSeleccionadas?: string[];
   busquedaGeneral?: string;
-
   onEliminarCategoria?: (categoria: string) => void;
   onEliminarMarca?: (marca: string) => void;
-
   productosVisibles?: number;
   onCargarMas?: () => void;
 };
@@ -32,17 +28,16 @@ type CartItem = {
   cantidad: number;
 };
 
-const normalizarNombre = (
-  nombre: string | undefined | null,
-  fallback: string
-) =>
+const STORAGE_KEY = "cartItems";
+const WHATSAPP_NUMBER = "51915144663";
+
+const normalizarNombre = (nombre: string | undefined | null, fallback: string) =>
   nombre
     ?.replace(/\.[^.]+$/, "")
     ?.replace(/[_-]+/g, " ")
     ?.trim()
-    ?.replace(/\b\w/g, (c) => c.toUpperCase()) ?? fallback;
-
-
+    ?.replace(/\b\w/g, (c) => c.toUpperCase())
+    ?? fallback;
 
 export default function Seccion_3({
   categoriasSeleccionadas = [],
@@ -53,209 +48,136 @@ export default function Seccion_3({
   productosVisibles = 12,
   onCargarMas = () => {},
 }: Props) {
-  const STORAGE_KEY = "cartItems";
-  const whatsappNumber = "51915144663";
-
-  const [mostrarModalCompra, setMostrarModalCompra] = useState(false);
+  const [mostrarModal, setMostrarModal] = useState(false);
   const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
   const [productos, setProductos] = useState<Producto[]>([]);
-  const [cargandoProductos, setCargandoProductos] = useState(true);
+  const [cargando, setCargando] = useState(true);
 
-  // ─────────────────────────────────────────────────────────────
-  // CARGA DE PRODUCTOS
-  //
-  // - Sin filtros           → listarProductos() (todos)
-  // - Con categorías        → listarProductosPorCategoria() por cada una
-  // - Con marcas            → listarProductosPorMarca() por cada una
-  // - Con ambos             → consulta categorías Y marcas, luego intersección
-  // ─────────────────────────────────────────────────────────────
+  // ── Carga de productos ──────────────────────────────────────
   useEffect(() => {
-    const cargarProductos = async () => {
+    const cargar = async () => {
       try {
-        setCargandoProductos(true);
+        setCargando(true);
 
         const tieneCategorias = categoriasSeleccionadas.length > 0;
         const tieneMarcas = marcasSeleccionadas.length > 0;
 
         if (!tieneCategorias && !tieneMarcas) {
-          // ── Sin filtros: traer todo ──
-          const data = await listarProductos();
-          setProductos(data);
+          setProductos(await listarProductos());
           return;
         }
 
-        let porCategorias: Producto[] = [];
-        let porMarcas: Producto[] = [];
-
-        if (tieneCategorias) {
-          // ── Una consulta por cada categoría seleccionada ──
-          const resultados = await Promise.all(
-            categoriasSeleccionadas.map((cat) =>
-              listarProductosPorCategoria(cat)
-            )
-          );
-          // Aplanar y deduplicar por prdcid
+        const deduplicar = (listas: Producto[][]): Producto[] => {
           const mapa = new Map<number, Producto>();
-          for (const lista of resultados) {
-            for (const p of lista) {
-              mapa.set(p.prdcid, p);
-            }
-          }
-          porCategorias = Array.from(mapa.values());
-        }
+          for (const lista of listas)
+            for (const p of lista) mapa.set(p.prdcid, p);
+          return Array.from(mapa.values());
+        };
 
-        if (tieneMarcas) {
-          // ── Una consulta por cada marca seleccionada ──
-          const resultados = await Promise.all(
-            marcasSeleccionadas.map((mar) =>
-              listarProductosPorMarca(mar)
-            )
-          );
-          const mapa = new Map<number, Producto>();
-          for (const lista of resultados) {
-            for (const p of lista) {
-              mapa.set(p.prdcid, p);
-            }
-          }
-          porMarcas = Array.from(mapa.values());
-        }
+        const porCategorias = tieneCategorias
+          ? deduplicar(await Promise.all(categoriasSeleccionadas.map(listarProductosPorCategoria)))
+          : [];
+
+        const porMarcas = tieneMarcas
+          ? deduplicar(await Promise.all(marcasSeleccionadas.map(listarProductosPorMarca)))
+          : [];
 
         if (tieneCategorias && tieneMarcas) {
-          // ── Ambos filtros: intersección (producto debe cumplir los dos) ──
           const idsMarcas = new Set(porMarcas.map((p) => p.prdcid));
           setProductos(porCategorias.filter((p) => idsMarcas.has(p.prdcid)));
-        } else if (tieneCategorias) {
-          setProductos(porCategorias);
         } else {
-          setProductos(porMarcas);
+          setProductos(tieneCategorias ? porCategorias : porMarcas);
         }
       } catch (error) {
         console.error("Error cargando productos:", error);
         setProductos([]);
       } finally {
-        setCargandoProductos(false);
+        setCargando(false);
       }
     };
 
-    cargarProductos();
-  }, [categoriasSeleccionadas, marcasSeleccionadas]); // 👈 se re-ejecuta cuando cambian los filtros
+    cargar();
+  }, [categoriasSeleccionadas, marcasSeleccionadas]);
 
-  useEffect(() => {
-    console.log("Texto actual del buscador:", busquedaGeneral);
-  }, [busquedaGeneral]);
+  // ── Filtrado local por búsqueda ─────────────────────────────
+  const productosFiltrados = useMemo(() => {
+    const hayFiltros = categoriasSeleccionadas.length > 0 || marcasSeleccionadas.length > 0;
+    if (hayFiltros || !busquedaGeneral.trim()) return productos;
 
-  // ─────────────────────────────────────────────────────────────
-  // FILTRADO LOCAL
-  // Solo aplica el texto de búsqueda cuando NO hay filtros activos
-  // ─────────────────────────────────────────────────────────────
-// ✅ Busca en nombre, categoría y marca — igual que tu SAW
-const productosFiltrados = useMemo(() => {
-  const hayFiltros =
-    categoriasSeleccionadas.length > 0 || marcasSeleccionadas.length > 0;
-
-  if (hayFiltros) return productos;
-
-  if (!busquedaGeneral.trim()) return productos;
-
-  const q = busquedaGeneral.toLowerCase().trim();
-
-  return productos.filter((producto) =>
-    producto.prdcnombre?.toLowerCase().includes(q) ||
-    producto.categoria?.ctgranombre?.toLowerCase().includes(q) ||
-    producto.marca?.marcanombre?.toLowerCase().includes(q)
-  );
-}, [productos, categoriasSeleccionadas, marcasSeleccionadas, busquedaGeneral]);
+    const q = busquedaGeneral.toLowerCase().trim();
+    return productos.filter(
+      (p) =>
+        p.prdcnombre?.toLowerCase().includes(q) ||
+        p.categoria?.ctgranombre?.toLowerCase().includes(q) ||
+        p.marca?.marcanombre?.toLowerCase().includes(q)
+    );
+  }, [productos, categoriasSeleccionadas, marcasSeleccionadas, busquedaGeneral]);
 
   const productosRenderizados = useMemo(
     () => productosFiltrados.slice(0, productosVisibles),
     [productosFiltrados, productosVisibles]
   );
 
-  // ─────────────────────────────────────────────────────────────
-  // MODAL
-  // ─────────────────────────────────────────────────────────────
-  const abrirModalCompra = (producto: Producto) => {
+  // ── Modal ───────────────────────────────────────────────────
+  const abrirModal = (producto: Producto) => {
     setProductoSeleccionado(producto);
-    setMostrarModalCompra(true);
+    setMostrarModal(true);
   };
 
-  const cerrarModalCompra = () => {
-    setMostrarModalCompra(false);
+  const cerrarModal = () => {
+    setMostrarModal(false);
     setProductoSeleccionado(null);
   };
 
   const anadirAlCarrito = () => {
     if (!productoSeleccionado) return;
 
-    const titulo = normalizarNombre(
-      productoSeleccionado.prdcnombre,
-      `Producto ${productoSeleccionado.prdcid}`
-    );
-    const categoria = normalizarNombre(
-      productoSeleccionado.categoria?.ctgranombre,
-      "Sin categoria"
-    );
-      const marca = normalizarNombre(          // 👈 agregar
-    productoSeleccionado.marca?.marcanombre,
-    "Sin marca"
-  );
-    const imagen = productoSeleccionado.prdcimgnombrebucket
-      ? getImagenProducto(productoSeleccionado.prdcimgnombrebucket)
-      : "";
+    const nuevo: CartItem = {
+      id: productoSeleccionado.prdcid,
+      titulo: normalizarNombre(productoSeleccionado.prdcnombre, `Producto ${productoSeleccionado.prdcid}`),
+      categoria: normalizarNombre(productoSeleccionado.categoria?.ctgranombre, "Sin categoria"),
+      marca: normalizarNombre(productoSeleccionado.marca?.marcanombre, "Sin marca"),
+      imagen: productoSeleccionado.prdcimgnombrebucket
+        ? getImagenProducto(productoSeleccionado.prdcimgnombrebucket)
+        : "",
+      cantidad: 1,
+    };
 
-    const actual = localStorage.getItem(STORAGE_KEY);
-    const cartItems: CartItem[] = actual ? JSON.parse(actual) : [];
-    const existente = cartItems.find((item) => item.id === productoSeleccionado.prdcid);
+    const previos: CartItem[] = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+    const existente = previos.find((i) => i.id === nuevo.id);
 
-    const nextItems = existente
-      ? cartItems.map((item) =>
-          item.id === productoSeleccionado.prdcid
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        )
-      : [
-          ...cartItems,
-          { id: productoSeleccionado.prdcid, titulo, categoria, marca, imagen, cantidad: 1 },
-        ];
+    const siguientes = existente
+      ? previos.map((i) => (i.id === nuevo.id ? { ...i, cantidad: i.cantidad + 1 } : i))
+      : [...previos, nuevo];
 
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextItems));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(siguientes));
     window.dispatchEvent(new Event("cartUpdated"));
-    cerrarModalCompra();
+    cerrarModal();
   };
 
   const comprarPorWhatsapp = () => {
     if (!productoSeleccionado) return;
 
-    const titulo = normalizarNombre(
-      productoSeleccionado.prdcnombre,
-      `Producto ${productoSeleccionado.prdcid}`
-    );
-    const marca = normalizarNombre(
-      productoSeleccionado.marca?.marcanombre,
-      "Sin marca"
-    );
-    const categoria = normalizarNombre(
-      productoSeleccionado.categoria?.ctgranombre,
-      "Sin categoria"
-    );
-
     const mensaje = [
       "Hola, quiero comprar este producto:",
-      titulo,
-      `Marca: ${marca}`,
-      `Categoria: ${categoria}`,
+      normalizarNombre(productoSeleccionado.prdcnombre, `Producto ${productoSeleccionado.prdcid}`),
+      `Marca: ${normalizarNombre(productoSeleccionado.marca?.marcanombre, "Sin marca")}`,
+      `Categoria: ${normalizarNombre(productoSeleccionado.categoria?.ctgranombre, "Sin categoria")}`,
     ].join("\n");
 
     window.open(
-      `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(mensaje)}`,
+      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(mensaje)}`,
       "_blank",
       "noopener,noreferrer"
     );
   };
 
+  // ── Render ──────────────────────────────────────────────────
   return (
     <>
-      <section className={styles.contenido}>
+      <section className={styles.seccion}>
+
+        {/* Filtros activos */}
         <div className={styles.resumen}>
           <div className={styles.resumenCabecera}>
             <div>
@@ -311,107 +233,86 @@ const productosFiltrados = useMemo(() => {
           </div>
         </div>
 
+        {/* Grid de productos */}
         <div className={styles.cuerpo}>
-          <div className={styles.productosArea}>
-            {cargandoProductos ? (
-              <div className={styles.vacio}>Cargando productos...</div>
-            ) : productosFiltrados.length > 0 ? (
-              <>
-                <div className={styles.gridProductos}>
-                  {productosRenderizados.map((producto) => {
-                    const titulo = normalizarNombre(
-                      producto.prdcnombre,
-                      `Producto ${producto.prdcid}`
-                    );
-                    const categoria = normalizarNombre(
-                      producto.categoria?.ctgranombre,
-                      "Sin categoria"
-                    );
-                    const marca = normalizarNombre(
-                      producto.marca?.marcanombre,
-                      "Sin marca"
-                    );
-                    const imagen = producto.prdcimgnombrebucket
-                      ? getImagenProducto(producto.prdcimgnombrebucket)
-                      : "";
+          {cargando ? (
+            <div className={styles.vacio}>Cargando productos...</div>
+          ) : productosFiltrados.length > 0 ? (
+            <>
+              <div className={styles.gridProductos}>
+                {productosRenderizados.map((producto) => {
+                  const titulo = normalizarNombre(producto.prdcnombre, `Producto ${producto.prdcid}`);
+                  const categoria = normalizarNombre(producto.categoria?.ctgranombre, "Sin categoria");
+                  const marca = normalizarNombre(producto.marca?.marcanombre, "Sin marca");
+                  const imagen = producto.prdcimgnombrebucket
+                    ? getImagenProducto(producto.prdcimgnombrebucket)
+                    : "";
 
-                    return (
-                      <article key={producto.prdcid} className={styles.productoCard}>
-                        <div className={styles.productoImagenWrap}>
-                          {imagen ? (
-                            <img
-                              src={imagen}
-                              alt={titulo}
-                              className={styles.productoImagen}
-                              loading="lazy"
-                            />
-                          ) : (
-                            <div className={styles.productoPlaceholder}>Sin imagen</div>
-                          )}
-                        </div>
-                        <h3 className={styles.productoTitulo}>{titulo}</h3>
-                        <p className={styles.productoCategoria}>{categoria}</p>
-                        <p className={styles.productoMarca}>{marca}</p>
-                        <button
-                          type="button"
-                          className={styles.loQuieroButton}
-                          onClick={() => abrirModalCompra(producto)}
-                        >
-                          <p>{icon.iconCarrito({ className: styles.modalSvg })}</p>
-                          Lo quiero
-                        </button>
-                      </article>
-                    );
-                  })}
-                </div>
-
-                {productosFiltrados.length > productosRenderizados.length && (
-                  <div className={styles.acciones}>
-                    <button
-                      type="button"
-                      className={styles.cargarMas}
-                      onClick={onCargarMas}
-                    >
-                      Ver mas productos
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className={styles.vacio}>
-                {busquedaGeneral.trim() &&
-                categoriasSeleccionadas.length === 0 &&
-                marcasSeleccionadas.length === 0
-                  ? `No se encontraron productos para "${busquedaGeneral}".`
-                  : "No hay productos disponibles."}
+                  return (
+                    <article key={producto.prdcid} className={styles.productoCard}>
+                      <div className={styles.productoImagenWrap}>
+                        {imagen ? (
+                          <img
+                            src={imagen}
+                            alt={titulo}
+                            className={styles.productoImagen}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className={styles.productoPlaceholder}>Sin imagen</div>
+                        )}
+                      </div>
+                      <h3 className={styles.productoTitulo}>{titulo}</h3>
+                      <p className={styles.productoCategoria}>{categoria}</p>
+                      <p className={styles.productoMarca}>{marca}</p>
+                      <button
+                        type="button"
+                        className={styles.loQuieroButton}
+                        onClick={() => abrirModal(producto)}
+                      >
+                        <p>{icon.iconCarrito({ className: styles.modalSvg })}</p>
+                        Lo quiero
+                      </button>
+                    </article>
+                  );
+                })}
               </div>
-            )}
-          </div>
+
+              {productosFiltrados.length > productosRenderizados.length && (
+                <div className={styles.acciones}>
+                  <button type="button" className={styles.cargarMas} onClick={onCargarMas}>
+                    Ver mas productos
+                  </button>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className={styles.vacio}>
+              {busquedaGeneral.trim() &&
+              categoriasSeleccionadas.length === 0 &&
+              marcasSeleccionadas.length === 0
+                ? `No se encontraron productos para "${busquedaGeneral}".`
+                : "No hay productos disponibles."}
+            </div>
+          )}
         </div>
       </section>
 
-      {mostrarModalCompra && productoSeleccionado && (
-        <div className={styles.modalOverlay} onClick={cerrarModalCompra}>
+      {/* Modal de compra */}
+      {mostrarModal && productoSeleccionado && (
+        <div className={styles.modalOverlay} onClick={cerrarModal}>
           <div className={styles.modalCompra} onClick={(e) => e.stopPropagation()}>
             <h3 className={styles.modalTitulo}>Como deseas continuar?</h3>
             <p className={styles.modalTexto}>Elige una opcion para completar tu compra</p>
 
-            <button
-              type="button"
-              className={styles.modalBotonNaranja}
-              onClick={anadirAlCarrito}
-            >
+            <button type="button" className={styles.modalBotonNaranja} onClick={anadirAlCarrito}>
               <span className={styles.modalIcono}>
                 {icon.iconCarrito({ className: styles.modalCarrito })}
               </span>
               <span>Añadir al carrito</span>
             </button>
 
-            <button
-              type="button"
-              className={styles.modalBotonVerde}
-              onClick={comprarPorWhatsapp}
-            >
+            <button type="button" className={styles.modalBotonVerde} onClick={comprarPorWhatsapp}>
               <p>{icon.iconWhatsApp({ className: styles.modalWhatsapp })}</p>
               <span>Realizar la compra</span>
             </button>

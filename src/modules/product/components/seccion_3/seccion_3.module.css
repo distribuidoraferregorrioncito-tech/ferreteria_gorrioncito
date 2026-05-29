@@ -1,8 +1,10 @@
-.contenido {
+/* ── Contenedor raíz ──────────────────────────────────── */
+.seccion {
   flex: 1;
   margin-bottom: 100px;
 }
 
+/* ── Filtros activos ──────────────────────────────────── */
 .resumen {
   border-radius: 22px;
   background:
@@ -18,10 +20,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  padding: 12px 12px 0 26px;
   margin-bottom: 12px;
-  margin-top: 12px;
-  margin-left: 26px;
-  margin-right: 12px;
 }
 
 .resumenTitulo {
@@ -39,7 +39,7 @@
 }
 
 .resumenGrid {
-  margin-left: 10px;
+  padding: 0 12px 12px 10px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
@@ -51,59 +51,6 @@
   background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(119, 132, 189, 0.14);
   padding: 12px 14px;
-}
-.loQuieroButton {
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid rgb(247, 142, 5);
-  border-radius: 19px;
-  background: #f56e00;
-  color: white;
-  font-size: 13px;
-  font-weight: 800;
-  padding: 10px 16px;
-  cursor: pointer;
-  gap: 6px;
-
-  transition: all 0.3s ease;
-  z-index: 1;
-}
-
-/* capa animada */
-.loQuieroButton::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-
-  background: #f8872b;
-  transition: left 0.35s ease;
-
-  z-index: -1;
-}
-
-/* Hover */
-.loQuieroButton:hover::before {
-  left: 0;
-}
-
-.loQuieroButton:hover {
-  color: white;
-  border-color: #f56e00;
-
-  transform: translateY(-2px);
-  box-shadow: 0 6px 14px rgba(245, 110, 0, 0.25);
-}
-
-/* Click */
-.loQuieroButton:active {
-  transform: scale(0.97);
 }
 
 .etiqueta {
@@ -164,60 +111,62 @@
   gap: 8px;
 }
 
+/* ── Cuerpo / Grid ────────────────────────────────────── */
 .cuerpo {
   margin-top: 18px;
-  display: block;
 }
 
 .gridProductos {
   margin-left: 30px;
   display: grid;
-
-  grid-template-columns: repeat(
-    auto-fill,
-    minmax(200px, 200px)
-  );
-
+  grid-template-columns: repeat(auto-fill, minmax(200px, 200px));
   justify-content: start;
   align-items: start;
   gap: 12px;
 }
 
+/* ── Card de producto ─────────────────────────────────── */
 .productoCard {
   width: 200px;
-   
   border-radius: 28px;
   background: white;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
   padding: 16px 18px 20px;
-  animation: entradaProducto 0.45s ease;
+  animation: aparecer 0.45s ease;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
   text-align: center;
+  /* Evita que el contenido desborde el card */
+  overflow: hidden;
 }
 
 .productoImagenWrap {
-  border-radius: 10px;
   width: 100%;
-  height: auto;
+  /* Altura fija para que todas las imágenes ocupen el mismo espacio */
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
+  overflow: hidden;
+  border-radius: 14px;
   background: #ffffff;
 }
 
 .productoImagen {
-  width: 100%;
-  max-width: 150px;
+  /* La imagen nunca supera el ancho/alto del contenedor */
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
   object-fit: contain;
+  display: block;
 }
 
 .productoPlaceholder {
   width: 100%;
-  height: 120px;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #eff2f9 0%, #fbfcff 100%);
   color: #7b8399;
   font-size: 12px;
   font-weight: 800;
@@ -231,48 +180,77 @@
   font-size: 14px;
   line-height: 1.15;
   font-weight: 900;
+  /* Evita que títulos largos rompan el layout */
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
 .productoCategoria {
-  margin: 0 0 10px;
+  margin: 0 0 4px;
   color: #818181;
   font-size: 12px;
   font-weight: 700;
-    overflow-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
-  white-space: normal;
 }
 
 .productoMarca {
-  margin: 0 0 6px;
+  margin: 0 0 10px;
   color: #818181;
   font-size: 13px;
   font-weight: 800;
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 
-.productoPrecio {
-  margin: 0 0 12px;
-  color: #0d8c2f;
-  font-size: 16px;
-  font-weight: 900;
-}
-
-.productoBoton {
-  border: none;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #ffa01a 0%, #ff8500 100%);
-  color: #111111;
+/* ── Botón "Lo quiero" ────────────────────────────────── */
+.loQuieroButton {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgb(247, 142, 5);
+  border-radius: 19px;
+  background: #f56e00;
+  color: white;
   font-size: 13px;
   font-weight: 800;
   padding: 10px 16px;
-  box-shadow: 0 12px 18px rgba(255, 133, 0, 0.34);
   cursor: pointer;
+  gap: 6px;
+  transition: all 0.3s ease;
+  z-index: 1;
 }
 
-.productoBoton:hover {
-  transform: translateY(-1px);
+.loQuieroButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #f8872b;
+  transition: left 0.35s ease;
+  z-index: -1;
 }
 
+.loQuieroButton:hover::before { left: 0; }
+.loQuieroButton:hover {
+  color: white;
+  border-color: #f56e00;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(245, 110, 0, 0.25);
+}
+.loQuieroButton:active { transform: scale(0.97); }
+
+.modalSvg {
+  width: 24px;
+  height: 24px;
+}
+
+/* ── Vacío / cargando ─────────────────────────────────── */
 .vacio {
   min-height: 220px;
   display: flex;
@@ -285,6 +263,7 @@
   font-weight: 700;
 }
 
+/* ── Cargar más ───────────────────────────────────────── */
 .acciones {
   display: flex;
   justify-content: center;
@@ -303,6 +282,7 @@
   box-shadow: 0 12px 22px rgba(36, 53, 133, 0.28);
 }
 
+/* ── Modal ────────────────────────────────────────────── */
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -341,7 +321,6 @@
 .modalBotonVerde {
   position: relative;
   overflow: hidden;
-
   width: 100%;
   display: flex;
   align-items: center;
@@ -354,21 +333,15 @@
   font-weight: 800;
   padding: 12px 16px;
   cursor: pointer;
-
   transition: all 0.3s ease;
 }
 
-/* Fondos */
-.modalBotonNaranja {
-  background: linear-gradient(180deg, #f2a300 0%, #e78d00 100%);
-}
-
+.modalBotonNaranja { background: linear-gradient(180deg, #f2a300 0%, #e78d00 100%); }
 .modalBotonVerde {
   margin-top: 10px;
   background: linear-gradient(180deg, #35cf3e 0%, #1ab223 100%);
 }
 
-/* capa brillante animada */
 .modalBotonNaranja::before,
 .modalBotonVerde::before {
   content: "";
@@ -377,44 +350,24 @@
   left: -120%;
   width: 60%;
   height: 100%;
-
   background: rgba(255, 255, 255, 0.25);
-
   transform: skewX(-25deg);
   transition: left 0.6s ease;
 }
 
-/* Hover */
 .modalBotonNaranja:hover,
 .modalBotonVerde:hover {
   transform: translateY(-3px) scale(1.01);
-
   box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
 }
 
-/* brillo recorriendo */
 .modalBotonNaranja:hover::before,
-.modalBotonVerde:hover::before {
-  left: 140%;
-}
+.modalBotonVerde:hover::before { left: 140%; }
 
-/* Click */
 .modalBotonNaranja:active,
-.modalBotonVerde:active {
-  transform: scale(0.98);
-}
-  
-.modalWhatsapp {
-  width: 42px;
-  height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background:transparent;
-  color: #ffffff;
-  flex-shrink: 0;
-}
+.modalBotonVerde:active { transform: scale(0.98); }
+
+.modalWhatsapp,
 .modalCarrito {
   width: 42px;
   height: 42px;
@@ -422,33 +375,18 @@
   align-items: center;
   justify-content: center;
   border-radius: 12px;
-  background:transparent;
+  background: transparent;
   color: #ffffff;
   flex-shrink: 0;
 }
 
-.modalSvg{
-  width:24px;
-  height:24px;
-}
-.modalIconoImagen {
-  width: 26px;
-  height: 26px;
-  object-fit: contain;
-}
-
+/* ── Animación entrada ────────────────────────────────── */
 @keyframes aparecer {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Responsive ───────────────────────────────────────── */
 @media (max-width: 1024px) {
   .resumenGrid {
     grid-template-columns: 1fr;
@@ -469,13 +407,8 @@
     margin-bottom: 12px;
   }
 
-  .resumenTitulo {
-    font-size: 0.98rem;
-  }
-
-  .resumenTexto {
-    font-size: 0.84rem;
-  }
+  .resumenTitulo { font-size: 0.98rem; }
+  .resumenTexto  { font-size: 0.84rem; }
 
   .resumenBloque {
     min-height: 0;
@@ -488,51 +421,28 @@
     font-size: 0.82rem;
   }
 
-  .cuerpo {
-    margin-top: 14px;
-  }
+  .cuerpo { margin-top: 14px; }
 
   .gridProductos {
-    grid-template-columns: 1fr;
-    gap: 14px;
+    margin-left: 0;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
   }
 
   .productoCard {
-    max-width: none;
     width: 100%;
     border-radius: 16px;
-    padding: 10px;
+    padding: 12px 12px 16px;
     box-shadow: 0 12px 22px rgba(53, 53, 53, 0.18);
   }
 
-  .productoImagenWrap {
-    height: 168px;
-    border-width: 3px;
-  }
+  .productoImagenWrap { height: 130px; }
 
-  .productoTitulo {
-    font-size: 13px;
-  }
-
+  .productoTitulo    { font-size: 13px; }
   .productoCategoria,
-  .productoMarca {
-    font-size: 12px;
-  }
+  .productoMarca     { font-size: 12px; }
 
-  .productoPrecio {
-    font-size: 15px;
-  }
-
-  .productoBoton {
-    min-width: 0;
-    width: 100%;
-    height: 40px;
-    font-size: 13px;
-  }
-
-  .acciones {
-    padding-top: 14px;
-  }
+  .acciones { padding-top: 14px; }
 
   .cargarMas {
     width: 100%;
@@ -544,11 +454,6 @@
     border-radius: 16px;
   }
 
-  .modalTitulo {
-    font-size: 18px;
-  }
-
-  .modalTexto {
-    font-size: 13px;
-  }
+  .modalTitulo { font-size: 18px; }
+  .modalTexto  { font-size: 13px; }
 }
