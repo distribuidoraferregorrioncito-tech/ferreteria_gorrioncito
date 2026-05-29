@@ -5,7 +5,7 @@ import {
   getImagenMarca,
   listarMarcas,
 } from "../../../../core/services/marca.service";
-import { Marca } from "../../../../core/types"
+import { Marca } from "../../../../core/types";
 
 const Seccion_3 = () => {
   const [marcas, setMarcas] = useState<Marca[]>([]);
@@ -19,91 +19,66 @@ const Seccion_3 = () => {
       });
   }, []);
 
-  const marcasDuplicadas = useMemo(() => {
+  // Primera mitad y segunda mitad, cada una duplicada para el loop infinito
+  const mitadSuperior = useMemo(() => {
     if (marcas.length === 0) return [];
-    return [...marcas, ...marcas];
+    const mitad = marcas.slice(0, Math.ceil(marcas.length / 2));
+    return [...mitad, ...mitad];
   }, [marcas]);
+
+  const mitadInferior = useMemo(() => {
+    if (marcas.length === 0) return [];
+    const mitad = marcas.slice(Math.ceil(marcas.length / 2));
+    return [...mitad, ...mitad];
+  }, [marcas]);
+
+  const renderMarcas = (lista: Marca[], pistaClass: string) => (
+    <div className={style.viewport}>
+      <div className={pistaClass}>
+        {lista.map((marca, index) => {
+          const imagen = marca.marcaimgnombrebucket
+            ? getImagenMarca(marca.marcaimgnombrebucket)
+            : "";
+          const nombre =
+            marca.marcanombre
+              ?.replace(/\.[^.]+$/, "")
+              ?.replace(/[_-]+/g, " ")
+              ?.trim()
+              ?.replace(/\b\w/g, (c) => c.toUpperCase()) ??
+            `Marca ${marca.marcaid}`;
+
+          return (
+            <article key={`${marca.marcaid}-${index}`} className={style.card}>
+              {imagen ? (
+                <img src={imagen} alt={nombre} className={style.imagen} />
+              ) : (
+                <div className={style.placeholder}>{nombre}</div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  );
 
   return (
     <section className={style.seccion}>
-
-      {/* Carrusel derecha */}
-      <div className={style.carruselMarco}>
-        <button className={`${style.flecha} ${style.flechaIzquierda}`} type="button">&#8249;</button>
-        <div className={style.viewport}>
-          {marcasDuplicadas.length > 0 ? (
-            <div className={style.pistaDerecha}>
-              {marcasDuplicadas.map((marca, index) => {
-                const imagen = marca.marcaimgnombrebucket
-                  ? getImagenMarca(marca.marcaimgnombrebucket)
-                  : "";
-                const nombre = marca.marcanombre
-                  ?.replace(/\.[^.]+$/, "")
-                  ?.replace(/[_-]+/g, " ")
-                  ?.trim()
-                  ?.replace(/\b\w/g, (c) => c.toUpperCase())
-                  ?? `Marca ${marca.marcaid}`;
-
-                return (
-                  <article key={`${marca.marcaid}-${index}`} className={style.card}>
-                    {imagen ? (
-                      <img src={imagen} alt={nombre} className={style.imagen} />
-                    ) : (
-                      <div className={style.placeholder}>{nombre}</div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={style.vacio}>No hay marcas disponibles.</div>
-          )}
-        </div>
-        <button className={`${style.flecha} ${style.flechaDerecha}`} type="button">&#8250;</button>
-      </div>
 
       {/* Encabezado */}
       <div className={style.encabezado}>
         <h2 className={style.titulo}>Marcas</h2>
         <p className={style.descripcion}>
-          Trabajamos con marcas reconocidas para ofrecer productos confiables en cada categoria.
+          Trabajamos con marcas reconocidas para ofrecer productos confiables en cada categoría.
         </p>
       </div>
 
-      {/* Carrusel izquierda */}
-      <div className={style.carruselMarco}>
-        <button className={`${style.flecha} ${style.flechaIzquierda}`} type="button">&#8249;</button>
-        <div className={style.viewport}>
-          {marcasDuplicadas.length > 0 ? (
-            <div className={style.pistaIzquierda}>
-              {marcasDuplicadas.map((marca, index) => {
-                const imagen = marca.marcaimgnombrebucket
-                  ? getImagenMarca(marca.marcaimgnombrebucket)
-                  : "";
-                const nombre = marca.marcanombre
-                  ?.replace(/\.[^.]+$/, "")
-                  ?.replace(/[_-]+/g, " ")
-                  ?.trim()
-                  ?.replace(/\b\w/g, (c) => c.toUpperCase())
-                  ?? `Marca ${marca.marcaid}`;
+      {/* Carrusel superior → derecha */}
+      {marcas.length > 0
+        ? renderMarcas(mitadSuperior, style.pistaDerecha)
+        : <div className={style.vacio}>No hay marcas disponibles.</div>}
 
-                return (
-                  <article key={`${marca.marcaid}-${index}`} className={style.card}>
-                    {imagen ? (
-                      <img src={imagen} alt={nombre} className={style.imagen} />
-                    ) : (
-                      <div className={style.placeholder}>{nombre}</div>
-                    )}
-                  </article>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={style.vacio}>No hay marcas disponibles.</div>
-          )}
-        </div>
-        <button className={`${style.flecha} ${style.flechaDerecha}`} type="button">&#8250;</button>
-      </div>
+      {/* Carrusel inferior → izquierda */}
+      {marcas.length > 0 && renderMarcas(mitadInferior, style.pistaIzquierda)}
 
     </section>
   );

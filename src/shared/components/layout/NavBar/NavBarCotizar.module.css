@@ -5,7 +5,7 @@
   height: 38px;
   border: 0;
   border-radius: 9px;
-  background: linear-gradient(180deg, #1951F7 0%, #1951F7 100%);
+  background: hsl(225, 95%, 35%);
   color: #ffffff;
   font-family: Sora, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
@@ -13,6 +13,8 @@
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 8px 16px rgba(9, 43, 87, 0.32);
+  margin-left: 14px;
+  margin-right: 14px;
 }
 
 /* ─── Overlay y Modal ────────────────────────────────────────────────────── */
