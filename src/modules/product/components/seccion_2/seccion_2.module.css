@@ -130,10 +130,22 @@
   margin: 0;
 }
 
-/* ─── Mobile ────────────────────────────────────────────── */
+/* Cuando está dentro del sidebar drawer mobile */
+.seccionDrawer {
+  width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  min-height: 100vh;
+}
 
 @media (max-width: 767px) {
   .seccion {
     display: none;
+  }
+
+  /* El drawer sí se muestra */
+  .seccionDrawer {
+    display: block;
   }
 }

@@ -12,6 +12,7 @@ type Props = {
   marcasSeleccionadas:     string[];
   onCategoriaSeleccionada: (categoria: string) => void;
   onMarcaSeleccionada:     (marca: string) => void;
+  enDrawer?:               boolean;   // ← nueva prop
 };
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -31,6 +32,7 @@ export default function Seccion_2({
   marcasSeleccionadas,
   onCategoriaSeleccionada,
   onMarcaSeleccionada,
+  enDrawer = false,
 }: Props) {
   const [tabActiva,  setTabActiva]  = useState<"categorias" | "marcas">("categorias");
   const [busqueda,   setBusqueda]   = useState("");
@@ -100,7 +102,7 @@ export default function Seccion_2({
   };
 
   return (
-    <aside className={styles.seccion}>
+     <aside className={`${styles.seccion} ${enDrawer ? styles.seccionDrawer : ""}`}>
 
       {/* ── Tabs ── */}
       <div className={styles.tabs}>

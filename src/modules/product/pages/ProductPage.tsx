@@ -124,6 +124,7 @@ export default function ProductPage() {
             />
             <aside className={styles.sidebarDrawer}>
               <Seccion_2
+                enDrawer={true}          
                 categoriasSeleccionadas={categoriasSeleccionadas}
                 marcasSeleccionadas={marcasSeleccionadas}
                 onCategoriaSeleccionada={(cat) => {
