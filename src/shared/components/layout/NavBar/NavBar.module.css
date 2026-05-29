@@ -1,9 +1,6 @@
 .wrapper {
   width: 100%;
   height: 70px;
-  position: sticky;
-  top: 0;
-  z-index: 100;
 }
 
 .navbar {
@@ -21,22 +18,42 @@
   padding: 0 16px;
 
   background: #0b1e57;
-
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
-
-  z-index: 101;
+  z-index: 100;
 }
 
-/* ───────────── ICONOS ───────────── */
+/* desktop */
 
-.whatsappIcon {
-  width: 40px;
-  object-fit: contain;
+.logoRow {
+  display: contents;
 }
 
-.ubicacionIcon {
-  width: 20px;
-  color: #8b95b0;
+.searchRow {
+  display: contents;
+}
+
+.menuDesktop {
+  display: flex;
+  gap: 8px;
+}
+
+.actionsDesktop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.link {
+  color: white;
+  text-decoration: none;
+}
+
+.cartButton {
+  position: relative;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .carritoIcon {
@@ -44,163 +61,130 @@
   color: #fff;
 }
 
-/* ───────────── BRAND ───────────── */
-
-.nameCompany {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.nameCompany h3 {
-  margin: 0;
-
-  color: #fff;
-
-  font-size: 1.45rem;
-  font-weight: 800;
-  line-height: 1;
-}
-
-.nameCompany p {
-  margin: 0;
-
-  color: #4d8dff;
-
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-/* ───────────── MENU ───────────── */
-
-.menu {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.link,
-.linkButton {
-  height: 38px;
-
-  padding: 0 14px;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-
-  border: none;
-  border-radius: 10px;
-
-  background: transparent;
-
-  color: #fff;
-  text-decoration: none;
-
-  font-size: 0.92rem;
-  font-weight: 700;
-
-  transition:
-    background 0.2s ease,
-    color 0.2s ease,
-    transform 0.2s ease;
-
-  cursor: pointer;
-}
-
-.link:hover,
-.linkButton:hover {
-  background: rgba(255, 255, 255, 0.08);
-  transform: translateY(-1px);
-}
-
-.arrow {
-  font-size: 0.7rem;
-}
-
-/* ───────────── ACTIONS ───────────── */
-
-.actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.quoteButton {
-  min-width: 110px;
-  height: 40px;
-
-  padding: 0 18px;
-
-  border: none;
-  border-radius: 12px;
-
-  background: #1951f7;
-
-  color: #fff;
-
-  font-size: 0.9rem;
-  font-weight: 800;
-
-  box-shadow: 0 8px 18px rgba(25, 81, 247, 0.3);
-
-  transition:
-    transform 0.2s ease,
-    filter 0.2s ease;
-
-  cursor: pointer;
-}
-
-.quoteButton:hover {
-  transform: translateY(-2px);
-  filter: brightness(1.05);
-}
-
-/* ───────────── CART ───────────── */
-
-.cartButton {
-  position: relative;
-
-  width: 48px;
-  height: 48px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  border-radius: 12px;
-
-  text-decoration: none;
-
-  transition: background 0.2s ease;
-}
-
-.cartButton:hover {
-  background: rgba(255, 255, 255, 0.08);
-}
-
 .cartCount {
   position: absolute;
-
   top: 2px;
   right: 2px;
+}
 
-  min-width: 18px;
-  height: 18px;
+/* hidden desktop */
 
-  padding: 0 5px;
+.hamburger,
+.drawer,
+.overlay {
+  display: none;
+}
 
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* MOBILE */
 
-  border-radius: 999px;
+@media (max-width: 767px) {
+  .wrapper {
+    height: 130px;
+  }
 
-  background: #1951f7;
-  color: #fff;
+  .navbar {
+    height: auto;
 
-  font-size: 0.7rem;
-  font-weight: 800;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+
+    padding: 12px 16px;
+  }
+
+  .logoRow {
+    display: flex;
+    align-items: center;
+  }
+
+  .searchRow {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .menuDesktop,
+  .actionsDesktop {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #1951f7;
+    color: white;
+
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .overlay {
+    display: block;
+
+    position: fixed;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.4);
+
+    z-index: 998;
+  }
+
+  .drawer {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 280px;
+    height: 100vh;
+
+    padding: 20px;
+
+    background: white;
+
+    z-index: 999;
+
+    box-shadow: 6px 0 20px rgba(0, 0, 0, 0.18);
+  }
+
+  .closeButton {
+    align-self: flex-end;
+
+    border: none;
+    background: transparent;
+
+    font-size: 1.5rem;
+    cursor: pointer;
+  }
+
+  .drawer .link {
+    color: #0b1e57;
+    font-weight: 700;
+  }
+
+  .cartButtonMobile {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    color: #0b1e57;
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .drawer .carritoIcon {
+    color: #0b1e57;
+  }
 }

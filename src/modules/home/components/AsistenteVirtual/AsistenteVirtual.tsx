@@ -10,6 +10,7 @@ interface Conversacion {
   mensajeid: number;
   mensajeentrada: string;
   mensajesalida: string | null;
+  mensajefecha?: string;           // ← agrega esto
   recomendarproducto?: ProductoRecomendado[];
 }
 
@@ -42,37 +43,30 @@ const AsistenteVirtual = () => {
     return data?.publicUrl ?? null;
   };
 
+// REEMPLAZA solo esta función en AsistenteVirtual.tsx
+
   const fetchProductosRecomendados = async (
-    mensajeid: number
-  ): Promise<ProductoRecomendado[]> => {
-    const { data: recomendados } = await supabase
-      .from("recomendar_producto")
-      .select("recomendarproductoid, recomendarproductonombre")
-      .eq("mensajeid", mensajeid);
+      mensajeid: number
+    ): Promise<ProductoRecomendado[]> => {
+      const { data: recomendados } = await supabase
+        .from("recomendar_producto")
+        .select("recomendarproductoid, recomendarproductonombre, recomendarproductourl")
+        .eq("mensajeid", mensajeid);
 
-    if (!recomendados || recomendados.length === 0) return [];
+      if (!recomendados || recomendados.length === 0) return [];
 
-    const resultados: ProductoRecomendado[] = [];
-    for (const rec of recomendados) {
-      const { data: producto } = await supabase
-        .from("producto")
-        .select("prdcimgnombrebucket")
-        .eq("prdcnombre", rec.recomendarproductonombre)
-        .single();
-
-      resultados.push({
+      return recomendados.map((rec) => ({
         recomendarproductoid:     rec.recomendarproductoid,
         recomendarproductonombre: rec.recomendarproductonombre,
-        imagen_url: producto ? obtenerImagenUrl(producto.prdcimgnombrebucket) : null,
-      });
-    }
-    return resultados;
-  };
+        // usa el mismo helper que ya tienes, con el bucket guardado
+        imagen_url: obtenerImagenUrl(rec.recomendarproductourl ?? null),
+      }));
+    };
 
   const fetchHistorial = useCallback(async (convId: number) => {
     const { data } = await supabase
       .from("mensaje")
-      .select("mensajeid, mensajeentrada, mensajesalida")
+      .select("mensajeid, mensajeentrada, mensajesalida,mensajefecha")
       .eq("historialconversacionid", convId)
       .order("mensajeid", { ascending: true });
 
@@ -197,6 +191,15 @@ const AsistenteVirtual = () => {
     (historial.length > 0 &&
       historial[historial.length - 1].mensajesalida === null);
 
+const formatHora = (fecha?: string): string => {
+  const d = fecha ? new Date(fecha) : new Date();
+  const fechaAjustada = new Date(d.getTime() - 5 * 60 * 60 * 1000);
+  return fechaAjustada.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
+};
   return (
     <>
       {!open && (
@@ -211,8 +214,9 @@ const AsistenteVirtual = () => {
           {/* HEADER */}
           <div className={style.chatHeader}>
             <div className={style.headerContent}>
-              <div className={style.headerLogo}>
+              <div className={style.headerLogoWrapper}>
                 <img src={images.logoGorrion} alt="Logo" />
+                <span className={style.estadoOnline} />
               </div>
               <div className={style.headerTitles}>
                 <h2>Asistente Virtual</h2>
@@ -235,16 +239,27 @@ const AsistenteVirtual = () => {
             {historial.map((conv) => (
               <div key={conv.mensajeid}>
 
-                <div className={style.mensajeUser}>
-                  {conv.mensajeentrada}
+                {/* Mensaje usuario con hora + checks */}
+                <div className={style.userRow}>
+                  <div className={style.mensajeUser}>
+                    {conv.mensajeentrada}
+                    <div className={style.metaUser}>
+                      <span className={style.horaUser}>{formatHora(conv.mensajefecha)}</span>
+                      <span className={conv.mensajesalida ? style.checkLeido : style.checkEnviado}>
+                        {conv.mensajesalida === null ? "✓" : "✓✓"}
+                      </span>
+                    </div>
+                  </div>
                 </div>
 
                 {conv.mensajesalida ? (
                   <>
+                    {/* Mensaje bot con hora debajo */}
                     <div className={style.botRow}>
                       <img src={images.perfilAsistente} alt="Asistente" className={style.botAvatar} />
-                      <div className={style.mensajeBot}>
-                        {conv.mensajesalida}
+                      <div>
+                        <div className={style.mensajeBot}>{conv.mensajesalida}</div>
+                        <span className={style.horaBot}>{formatHora(conv.mensajefecha)}</span>
                       </div>
                     </div>
 
@@ -264,14 +279,14 @@ const AsistenteVirtual = () => {
                         </div>
                       )}
                   </>
-                  ) : (
-                    <div className={style.botRow}>
-                      <img src={images.perfilAsistente} alt="Asistente" className={style.botAvatar} />
-                      <div className={`${style.mensajeBot} ${style.pensando}`}>
-                        <span /><span /><span />
-                      </div>
+                ) : (
+                  <div className={style.botRow}>
+                    <img src={images.perfilAsistente} alt="Asistente" className={style.botAvatar} />
+                    <div className={`${style.mensajeBot} ${style.pensando}`}>
+                      <span /><span /><span />
                     </div>
-                  )}
+                  </div>
+                )}
 
               </div>
             ))}

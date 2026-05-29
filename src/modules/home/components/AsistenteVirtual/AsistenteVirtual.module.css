@@ -98,17 +98,25 @@
   max-width: 80%;
 }
 
+/* ── Fila usuario (espejo de botRow) ────────────────────────── */
+.userRow {
+  display: flex;
+  flex-direction: row-reverse;   /* avatar a la derecha, burbuja a la izquierda */
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* ── Mensaje usuario ─────────────────────────────────────────── */
 .mensajeUser {
   background: #e3f2fd;
   padding: 15px;
   margin-bottom: 20px;
-  margin-left: 100px;
   border-radius: 15px;
   align-self: flex-end;
+  margin-left: auto;             /* empuja la burbuja hacia la derecha */
   width: fit-content;
   max-width: 80%;
 }
-
 /* ── Indicador escribiendo ──────────────────────────────────── */
 .pensando {
   display: flex;
@@ -211,4 +219,61 @@
   object-fit: cover;
   flex-shrink: 0;
   margin-top: 2px;
+}
+
+/* Hora debajo del bot */
+.horaBot {
+  font-size: 11px;
+  color: #aaa;
+  display: block;
+  margin-top: 4px;
+  padding-left: 4px;
+}
+
+/* Fila hora + check dentro del mensajeUser */
+.metaUser {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.horaUser {
+  font-size: 11px;
+  color: #aaa;
+}
+
+/* ✓ gris — enviado / bot escribiendo */
+.checkEnviado {
+  font-size: 13px;
+  color: #aaa;
+}
+
+/* ✓✓ azul — bot ya respondió */
+.checkLeido {
+  font-size: 13px;
+  color: #0d47a1;
+}
+.headerLogoWrapper {
+  position: relative;
+  width: 80px;
+  padding: 0 10px;
+}
+
+.headerLogoWrapper img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.estadoOnline {
+  position: absolute;
+  bottom: 2px;
+  right: 10px;
+  width: 13px;
+  height: 13px;
+  background: #39ff14;        /* verde fosforescente */
+  border: 2px solid white;
+  border-radius: 50%;
 }

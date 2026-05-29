@@ -2,7 +2,11 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import styles from "./seccion_1.module.css";
 import { supabase } from "../../../../lib/supabase";
-import { DEFAULT_BANNER_IMAGE, getField, resolveImageSource } from "../../../../shared/utils/catalogImage";
+import {
+  DEFAULT_BANNER_IMAGE,
+  getField,
+  resolveImageSource,
+} from "../../../../shared/utils/catalogImage";
 
 type SlideItem = {
   src: string;
@@ -19,10 +23,16 @@ const Seccion_1 = () => {
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState("");
 
-  const getStorageUrl = (bucketName: string | null, fileName: string | null) => {
+  const getStorageUrl = (
+    bucketName: string | null,
+    fileName: string | null
+  ) => {
     if (!bucketName || !fileName) return null;
 
-    const { data } = supabase.storage.from(bucketName).getPublicUrl(fileName);
+    const { data } = supabase.storage
+      .from(bucketName)
+      .getPublicUrl(fileName);
+
     return data?.publicUrl ?? null;
   };
 
@@ -36,22 +46,36 @@ const Seccion_1 = () => {
         .select("*");
 
       if (seccionesError) {
-        console.error("No se pudieron cargar las secciones de banners:", seccionesError.message);
+        console.error(
+          "No se pudieron cargar las secciones de banners:",
+          seccionesError.message
+        );
+
         setErrorCarga("No se pudieron cargar los banners.");
         setCargando(false);
         return;
       }
 
       const seccionesActivas = (secciones ?? [])
-        .filter((item) => Boolean(getField(item, "sc1UsarStorage", "sc1usarstorage")))
+        .filter((item) =>
+          Boolean(
+            getField(item, "sc1UsarStorage", "sc1usarstorage")
+          )
+        )
         .sort((a, b) => {
-          const aId = getField<number>(a, "sc1Id", "sc1id") ?? 0;
-          const bId = getField<number>(b, "sc1Id", "sc1id") ?? 0;
+          const aId =
+            getField<number>(a, "sc1Id", "sc1id") ?? 0;
+
+          const bId =
+            getField<number>(b, "sc1Id", "sc1id") ?? 0;
+
           return aId - bId;
         });
 
       const bannerIds = seccionesActivas
-        .map((item) => getField<number>(item, "bannerId", "bannerid"))
+        .map((item) =>
+          getField<number>(item, "bannerId", "bannerid")
+        )
         .filter(Boolean);
 
       if (bannerIds.length === 0) {
@@ -60,12 +84,17 @@ const Seccion_1 = () => {
         return;
       }
 
-      const { data: bannersData, error: bannersError } = await supabase
-        .from("banner")
-        .select("*");
+      const { data: bannersData, error: bannersError } =
+        await supabase
+          .from("banner")
+          .select("*");
 
       if (bannersError) {
-        console.error("No se pudieron cargar los banners:", bannersError.message);
+        console.error(
+          "No se pudieron cargar los banners:",
+          bannersError.message
+        );
+
         setErrorCarga("No se pudieron cargar los banners.");
         setCargando(false);
         return;
@@ -74,45 +103,105 @@ const Seccion_1 = () => {
       const bannerMap = new Map(
         (bannersData ?? [])
           .filter((banner) => {
-            const id = getField<number>(banner, "bannerId", "bannerid", "id");
-            return id !== null && bannerIds.includes(id);
+            const id = getField<number>(
+              banner,
+              "bannerId",
+              "bannerid",
+              "id"
+            );
+
+            return (
+              id !== null &&
+              bannerIds.includes(id)
+            );
           })
-          .map((banner) => [getField<number>(banner, "bannerId", "bannerid", "id"), banner])
+          .map((banner) => [
+            getField<number>(
+              banner,
+              "bannerId",
+              "bannerid",
+              "id"
+            ),
+            banner,
+          ])
       );
 
       const banners = seccionesActivas
         .map((item, index) => {
-          const bannerId = getField<number>(item, "bannerId", "bannerid");
+          const bannerId = getField<number>(
+            item,
+            "bannerId",
+            "bannerid"
+          );
+
           const banner = bannerMap.get(bannerId);
+
           if (!banner) return null;
 
-          const usaStorage = Boolean(getField(item, "sc1UsarStorage", "sc1usarstorage"));
-          const bucketName = getField<string>(
+          const usaStorage = Boolean(
+            getField(
+              item,
+              "sc1UsarStorage",
+              "sc1usarstorage"
+            )
+          );
+
+          const bucketName =
+            getField<string>(
+              banner,
+              "bannerBucket",
+              "bannerbucket",
+              "bucket",
+              "bucketName"
+            ) || DEFAULT_BUCKET_NAME;
+
+          const fileName = getField<string>(
             banner,
-            "bannerBucket",
-            "bannerbucket",
-            "bucket",
-            "bucketName"
-          ) || DEFAULT_BUCKET_NAME;
-          const fileName = getField<string>(banner, "bannerBucketNombre", "bannerbucketnombre");
-          const nombre = getField<string>(banner, "bannerNombre", "bannernombre");
-          const bannerLink = getField<string>(banner, "bannerLink", "bannerlink");
+            "bannerBucketNombre",
+            "bannerbucketnombre"
+          );
+
+          const nombre = getField<string>(
+            banner,
+            "bannerNombre",
+            "bannernombre"
+          );
+
+          const bannerLink = getField<string>(
+            banner,
+            "bannerLink",
+            "bannerlink"
+          );
 
           const src = resolveImageSource({
-            directUrl: usaStorage ? null : bannerLink,
+            directUrl: usaStorage
+              ? null
+              : bannerLink,
             bucketName,
             fileName,
-            defaultImage: DEFAULT_BANNER_IMAGE,
+            defaultImage:
+              DEFAULT_BANNER_IMAGE,
             getStorageUrl,
           });
 
           return {
             src,
-            link: bannerLink || slideLinks[index % slideLinks.length],
-            nombre: nombre || `Banner ${index + 1}`,
+            link:
+              bannerLink ||
+              slideLinks[
+                index % slideLinks.length
+              ],
+            nombre:
+              nombre ||
+              `Banner ${index + 1}`,
           };
         })
-        .filter((item): item is SlideItem => Boolean(item));
+        .filter(
+          (
+            item
+          ): item is SlideItem =>
+            Boolean(item)
+        );
 
       setSlides(banners);
       setCurrentIndex(0);
@@ -123,106 +212,193 @@ const Seccion_1 = () => {
   }, []);
 
   const nextSlide = () => {
-    setCurrentIndex((prev) => (prev + 1) % slides.length);
+    setCurrentIndex(
+      (prev) =>
+        (prev + 1) % slides.length
+    );
   };
 
   const prevSlide = () => {
     setCurrentIndex((prev) =>
-      prev === 0 ? slides.length - 1 : prev - 1
+      prev === 0
+        ? slides.length - 1
+        : prev - 1
     );
   };
 
   useEffect(() => {
-    if (slides.length === 0) return undefined;
+    if (slides.length === 0)
+      return undefined;
 
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 5000);
+    const interval =
+      setInterval(() => {
+        nextSlide();
+      }, 5000);
 
-    return () => clearInterval(interval);
+    return () =>
+      clearInterval(interval);
   }, [slides.length]);
 
   if (cargando) {
     return (
-      <section className={styles.carousel}>
-        <div className={styles.emptyState}>Cargando banners...</div>
+      <section className={styles.seccion}>
+        <section
+          className={styles.carousel}
+        >
+          <div
+            className={
+              styles.emptyState
+            }
+          >
+            Cargando banners...
+          </div>
+        </section>
       </section>
     );
   }
 
-  const slideActivo = slides[currentIndex];
+  const slideActivo =
+    slides[currentIndex];
 
-  if (!slideActivo || slides.length === 0) {
+  if (
+    !slideActivo ||
+    slides.length === 0
+  ) {
     return (
-      <section className={styles.carousel}>
-        <div className={styles.emptyState}>
-          {errorCarga || "No hay banners disponibles."}
-        </div>
+      <section className={styles.seccion}>
+        <section
+          className={styles.carousel}
+        >
+          <div
+            className={
+              styles.emptyState
+            }
+          >
+            {errorCarga ||
+              "No hay banners disponibles."}
+          </div>
+        </section>
       </section>
     );
   }
 
-  const esLinkExterno = /^https?:\/\//i.test(slideActivo.link);
+  const esLinkExterno =
+    /^https?:\/\//i.test(
+      slideActivo.link
+    );
 
   return (
-    <section className={styles.carousel}>
+    <section className={styles.seccion}>
+      <section className={styles.carousel}>
+        {/* Flecha izquierda */}
+        <button
+          className={
+            styles.arrowLeft
+          }
+          onClick={prevSlide}
+          aria-label="Anterior"
+        >
+          ❮
+        </button>
 
-      {/* Flecha izquierda */}
-      <button
-        className={styles.arrowLeft}
-        onClick={prevSlide}
-      >
-        ❮
-      </button>
+        {/* Banner */}
+        {esLinkExterno ? (
+          <a
+            href={slideActivo.link}
+            target="_blank"
+            rel="noreferrer"
+          >
+            {slideActivo.src ? (
+              <img
+                src={
+                  slideActivo.src
+                }
+                alt={
+                  slideActivo.nombre
+                }
+                className={
+                  styles.carouselImage
+                }
+              />
+            ) : (
+              <div
+                className={
+                  styles.imagePlaceholder
+                }
+              >
+                {
+                  slideActivo.nombre
+                }
+              </div>
+            )}
+          </a>
+        ) : (
+          <Link
+            to={slideActivo.link}
+          >
+            {slideActivo.src ? (
+              <img
+                src={
+                  slideActivo.src
+                }
+                alt={
+                  slideActivo.nombre
+                }
+                className={
+                  styles.carouselImage
+                }
+              />
+            ) : (
+              <div
+                className={
+                  styles.imagePlaceholder
+                }
+              >
+                {
+                  slideActivo.nombre
+                }
+              </div>
+            )}
+          </Link>
+        )}
 
-      {/* Imagen clickeable */}
-      {esLinkExterno ? (
-        <a href={slideActivo.link} target="_blank" rel="noreferrer">
-          {slideActivo.src ? (
-            <img
-              src={slideActivo.src}
-              alt={`Imagen ${currentIndex + 1}`}
-              className={styles.carouselImage}
-            />
-          ) : (
-            <div className={styles.imagePlaceholder}>{slideActivo.nombre}</div>
+        {/* Flecha derecha */}
+        <button
+          className={
+            styles.arrowRight
+          }
+          onClick={nextSlide}
+          aria-label="Siguiente"
+        >
+          ❯
+        </button>
+
+        {/* Indicadores */}
+        <div
+          className={
+            styles.indicators
+          }
+        >
+          {slides.map(
+            (_, index) => (
+              <div
+                key={index}
+                className={`${styles.dot} ${
+                  index ===
+                  currentIndex
+                    ? styles.active
+                    : ""
+                }`}
+                onClick={() =>
+                  setCurrentIndex(
+                    index
+                  )
+                }
+              />
+            )
           )}
-        </a>
-      ) : (
-        <Link to={slideActivo.link}>
-          {slideActivo.src ? (
-            <img
-              src={slideActivo.src}
-              alt={`Imagen ${currentIndex + 1}`}
-              className={styles.carouselImage}
-            />
-          ) : (
-            <div className={styles.imagePlaceholder}>{slideActivo.nombre}</div>
-          )}
-        </Link>
-      )}
-
-      {/* Flecha derecha */}
-      <button
-        className={styles.arrowRight}
-        onClick={nextSlide}
-      >
-        ❯
-      </button>
-
-      {/* Indicadores */}
-      <div className={styles.indicators}>
-        {slides.map((_, index) => (
-          <div
-            key={index}
-            className={`${styles.dot} ${
-              index === currentIndex ? styles.active : ""
-            }`}
-            onClick={() => setCurrentIndex(index)}
-          />
-        ))}
-      </div>
-
+        </div>
+      </section>
     </section>
   );
 };

@@ -7,8 +7,6 @@ import { NavBarSearch } from "./NavBarSearch";
 import { NavBarCategoria } from "./NavBarCategoria";
 import { NavBarCotizar } from "./NavBarCotizar";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 type CartItem = {
   id: string | number;
   titulo: string;
@@ -17,15 +15,12 @@ type CartItem = {
   cantidad: number;
 };
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const STORAGE_KEY = "cartItems";
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 const leerCarrito = (): CartItem[] => {
   const data = localStorage.getItem(STORAGE_KEY);
   if (!data) return [];
+
   try {
     const parsed = JSON.parse(data) as CartItem[];
     return Array.isArray(parsed) ? parsed : [];
@@ -34,18 +29,20 @@ const leerCarrito = (): CartItem[] => {
   }
 };
 
-// ─── Component ────────────────────────────────────────────────────────────────
-
 export default function NavBar() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const scrollTop = () => window.scrollTo({ top: 0 });
-  // ── Carrito ───────────────────────────────────────────────────────────────
 
   useEffect(() => {
     setCartItems(leerCarrito());
+
     const handleCartUpdate = () => setCartItems(leerCarrito());
+
     window.addEventListener("cartUpdated", handleCartUpdate);
     window.addEventListener("storage", handleCartUpdate);
+
     return () => {
       window.removeEventListener("cartUpdated", handleCartUpdate);
       window.removeEventListener("storage", handleCartUpdate);
@@ -57,32 +54,101 @@ export default function NavBar() {
     [cartItems]
   );
 
-  // ── Render ────────────────────────────────────────────────────────────────
+  const closeMenu = () => {
+    scrollTop();
+    setMenuOpen(false);
+  };
 
   return (
     <div className={style.wrapper}>
       <header className={style.navbar}>
-        <NavBarLogo/>
-        <NavBarSearch />
+        <div className={style.logoRow}>
+          <NavBarLogo />
+        </div>
 
-        <nav className={style.menu}>
+        <div className={style.searchRow}>
+          <NavBarSearch />
+
+          <button
+            className={style.hamburger}
+            onClick={() => setMenuOpen(true)}
+            aria-label="Abrir menú"
+          >
+            ☰
+          </button>
+        </div>
+
+        {/* Desktop */}
+        <nav className={style.menuDesktop}>
           <Link to="/nosotros" className={style.link} onClick={scrollTop}>
             Nosotros
           </Link>
+
           <Link to="/product" className={style.link} onClick={scrollTop}>
             Productos
           </Link>
+
           <NavBarCategoria />
         </nav>
 
-        <div className={style.actions}>
+        <div className={style.actionsDesktop}>
           <NavBarCotizar />
 
-          <Link to="/cart" className={style.cartButton} aria-label="Carrito">
+          <Link to="/cart" className={style.cartButton}>
             {icon.iconCarrito({ className: style.carritoIcon })}
-            {totalItems > 0 && <span className={style.cartCount}>{totalItems}</span>}
+            {totalItems > 0 && (
+              <span className={style.cartCount}>{totalItems}</span>
+            )}
           </Link>
         </div>
+
+        {/* Mobile drawer */}
+        {menuOpen && (
+          <>
+            <div
+              className={style.overlay}
+              onClick={() => setMenuOpen(false)}
+            />
+
+            <aside className={style.drawer}>
+              <button
+                className={style.closeButton}
+                onClick={() => setMenuOpen(false)}
+              >
+                ✕
+              </button>
+
+              <Link
+                to="/nosotros"
+                className={style.link}
+                onClick={closeMenu}
+              >
+                Nosotros
+              </Link>
+
+              <Link
+                to="/product"
+                className={style.link}
+                onClick={closeMenu}
+              >
+                Productos
+              </Link>
+
+              <NavBarCategoria />
+
+              <NavBarCotizar />
+
+              <Link
+                to="/cart"
+                className={style.cartButtonMobile}
+                onClick={closeMenu}
+              >
+                {icon.iconCarrito({ className: style.carritoIcon })}
+                Carrito ({totalItems})
+              </Link>
+            </aside>
+          </>
+        )}
       </header>
     </div>
   );
