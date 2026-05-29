@@ -38,6 +38,7 @@ export default function ProductPage() {
   const queryUrl          = searchParams.get("q")?.trim()         ?? "";
   const categoriaDesdeUrl = searchParams.get("categoria")?.trim() ?? "";
   const marcaDesdeUrl     = searchParams.get("marca")?.trim()     ?? "";
+  const abrirFiltrosDesdeUrl = searchParams.get("filtros") === "1";
 
   // ── Carga inicial ────────────────────────────────────────────────────────
 
@@ -46,7 +47,11 @@ export default function ProductPage() {
       .then((data) => startTransition(() => setProductos(data)))
       .catch((err) => console.error("Error cargando productos:", err));
   }, []);
-
+useEffect(() => {
+  if (abrirFiltrosDesdeUrl) {
+    setSidebarAbierto(true);
+  }
+}, [abrirFiltrosDesdeUrl]);
   // ── Listas únicas disponibles ─────────────────────────────────────────────
 
   const categoriasDisponibles = useMemo(
