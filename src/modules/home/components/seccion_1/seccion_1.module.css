@@ -1,151 +1,83 @@
 /* =========================================================
-   seccion_1.module.css
-   Sección principal - Banner / Carrusel
-   Mobile   : max-width 767px
-   Tablet   : 768px - 1023px
-   Laptop   : 1024px - 1439px
-   Desktop  : 1440px+
+   seccion_1.module.css  —  Banner / Carrusel
 ========================================================= */
 
-/* =========================================================
-   CONTENEDOR PRINCIPAL
-========================================================= */
+/* ─── Contenedor ───────────────────────────────────────── */
 
 .seccion {
-  width: 100%;
   position: relative;
-}
-
-/* =========================================================
-   CARRUSEL
-========================================================= */
-
-.carousel {
-  position: relative;
-
   width: 100%;
   overflow: hidden;
-
+  background: #0c192c;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background: #0c192c;
 }
 
-/* =========================================================
-   LINK DEL SLIDE
-========================================================= */
+/* ─── Link del slide ────────────────────────────────────── */
 
-.carousel a {
+.seccion a {
   display: block;
   width: 100%;
-  height: 100%;
 }
 
-/* =========================================================
-   IMAGEN
-========================================================= */
+/* ─── Imagen ────────────────────────────────────────────── */
 
-.carouselImage {
+.imagen {
   display: block;
-
   width: 100%;
   height: auto;
-
   object-fit: contain;
   object-position: center;
-
   user-select: none;
   pointer-events: none;
 }
 
-/* =========================================================
-   PLACEHOLDER
-========================================================= */
+/* ─── Placeholder / Estado ──────────────────────────────── */
 
-.imagePlaceholder {
+.placeholder,
+.estado {
   width: 100%;
   min-height: 320px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
-  background: #1a2e4a;
+  background: #0c192c;
   color: #90959c;
-
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-align: center;
+  padding: 0 16px;
 }
 
-/* =========================================================
-   ESTADO VACÍO / CARGA
-========================================================= */
-
-.emptyState {
-  width: 100%;
-  min-height: 320px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #0c192c;
-  color: #90959c;
-
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.03em;
-  text-align: center;
-}
-
-/* =========================================================
-   FLECHAS
-========================================================= */
+/* ─── Flechas ───────────────────────────────────────────── */
 
 .arrowLeft,
 .arrowRight {
   position: absolute;
   top: 50%;
   z-index: 10;
-
   width: 44px;
   height: 44px;
-
   display: flex;
   align-items: center;
   justify-content: center;
-
   border: none;
   border-radius: 50%;
-
   background: rgba(12, 25, 44, 0.55);
   color: #ffffff;
-
   font-size: 1.1rem;
-
   cursor: pointer;
   user-select: none;
-
   transform: translateY(-50%);
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease;
-
+  transition: background 0.2s ease, transform 0.2s ease;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
 }
 
-.arrowLeft {
-  left: 16px;
-}
-
-.arrowRight {
-  right: 16px;
-}
+.arrowLeft  { left: 16px; }
+.arrowRight { right: 16px; }
 
 .arrowLeft:hover,
 .arrowRight:hover {
@@ -158,57 +90,38 @@
   transform: translateY(-50%) scale(0.96);
 }
 
-/* =========================================================
-   INDICADORES
-========================================================= */
+/* ─── Indicadores ───────────────────────────────────────── */
 
 .indicators {
   position: absolute;
   bottom: 14px;
   left: 50%;
   z-index: 10;
-
   display: flex;
   gap: 8px;
-
   transform: translateX(-50%);
 }
 
 .dot {
   width: 9px;
   height: 9px;
-
   border-radius: 50%;
-
   background: rgba(255, 255, 255, 0.35);
-
   cursor: pointer;
   flex-shrink: 0;
-
-  transition:
-    background 0.25s ease,
-    transform 0.25s ease;
+  transition: background 0.25s ease, transform 0.25s ease;
 }
 
-.dot:hover {
-  background: rgba(255, 255, 255, 0.65);
-}
+.dot:hover  { background: rgba(255, 255, 255, 0.65); }
+.active     { background: #1478e0; transform: scale(1.25); }
 
-.active {
-  background: #1478e0;
-  transform: scale(1.25);
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
+/* ─── Mobile ────────────────────────────────────────────── */
 
 @media (max-width: 767px) {
-  .imagePlaceholder,
-  .emptyState {
+  .placeholder,
+  .estado {
     min-height: 180px;
     font-size: 0.95rem;
-    padding: 0 16px;
   }
 
   .arrowLeft,
@@ -218,54 +131,30 @@
     font-size: 0.95rem;
   }
 
-  .arrowLeft {
-    left: 10px;
-  }
+  .arrowLeft  { left: 10px; }
+  .arrowRight { right: 10px; }
 
-  .arrowRight {
-    right: 10px;
-  }
-
-  .indicators {
-    bottom: 10px;
-    gap: 6px;
-  }
-
-  .dot {
-    width: 8px;
-    height: 8px;
-  }
+  .indicators { bottom: 10px; gap: 6px; }
+  .dot        { width: 8px; height: 8px; }
 }
 
-/* =========================================================
-   TABLET
-========================================================= */
+/* ─── Tablet ────────────────────────────────────────────── */
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  .imagePlaceholder,
-  .emptyState {
-    min-height: 250px;
-  }
+  .placeholder,
+  .estado { min-height: 250px; }
 }
 
-/* =========================================================
-   LAPTOP
-========================================================= */
+/* ─── Laptop ────────────────────────────────────────────── */
 
 @media (min-width: 1024px) and (max-width: 1439px) {
-  .imagePlaceholder,
-  .emptyState {
-    min-height: 320px;
-  }
+  .placeholder,
+  .estado { min-height: 320px; }
 }
 
-/* =========================================================
-   DESKTOP GRANDE
-========================================================= */
+/* ─── Desktop grande ────────────────────────────────────── */
 
 @media (min-width: 1440px) {
-  .imagePlaceholder,
-  .emptyState {
-    min-height: 420px;
-  }
+  .placeholder,
+  .estado { min-height: 420px; }
 }

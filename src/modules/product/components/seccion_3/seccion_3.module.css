@@ -1,26 +1,28 @@
-/* ── Contenedor raíz ──────────────────────────────────── */
+/* =========================================================
+   seccion_3.module.css  —  Grid de productos
+========================================================= */
+
+/* ─── Contenedor ────────────────────────────────────────── */
+
 .seccion {
   flex: 1;
   margin-bottom: 100px;
 }
 
-/* ── Filtros activos ──────────────────────────────────── */
+/* ─── Filtros activos ───────────────────────────────────── */
+
 .resumen {
   border-radius: 22px;
+  border: 1px solid rgba(76, 93, 170, 0.1);
   background:
     radial-gradient(circle at top right, rgba(122, 146, 255, 0.18), transparent 28%),
     linear-gradient(180deg, #f4f6fb 0%, #eceff7 100%);
-  border: 1px solid rgba(76, 93, 170, 0.1);
-  color: #5f667c;
   box-shadow: 0 18px 30px rgba(36, 53, 133, 0.08);
+  color: #5f667c;
 }
 
 .resumenCabecera {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 12px 12px 0 26px;
+  padding: 16px 20px 0 26px;
   margin-bottom: 12px;
 }
 
@@ -39,17 +41,17 @@
 }
 
 .resumenGrid {
-  padding: 0 12px 12px 10px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
+  padding: 0 12px 16px;
 }
 
 .resumenBloque {
   min-height: 72px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
   border: 1px solid rgba(119, 132, 189, 0.14);
+  background: rgba(255, 255, 255, 0.72);
   padding: 12px 14px;
 }
 
@@ -60,6 +62,12 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+}
+
+.tagsFila {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .tag {
@@ -85,11 +93,12 @@
   padding: 5px 10px;
   cursor: pointer;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  transition: opacity 0.2s;
 }
 
-.tagTexto {
-  line-height: 1;
-}
+.tagBoton:hover { opacity: 0.8; }
+
+.tagTexto { line-height: 1; }
 
 .tagCerrar {
   width: 16px;
@@ -100,21 +109,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 800;
   line-height: 1;
 }
 
-.tagsFila {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
+/* ─── Cuerpo / Grid ─────────────────────────────────────── */
 
-/* ── Cuerpo / Grid ────────────────────────────────────── */
-.cuerpo {
-  margin-top: 18px;
-}
+.cuerpo { margin-top: 18px; }
 
 .gridProductos {
   margin-left: 30px;
@@ -125,23 +127,27 @@
   gap: 12px;
 }
 
-/* ── Card de producto ─────────────────────────────────── */
+/* ─── Card de producto ──────────────────────────────────── */
+
 .productoCard {
   width: 200px;
   border-radius: 28px;
   background: white;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.16);
   padding: 16px 18px 20px;
+  text-align: center;
+  overflow: hidden;
   animation: aparecer 0.45s ease;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
-  text-align: center;
-  /* Evita que el contenido desborde el card */
-  overflow: hidden;
+}
+
+.productoCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.2);
 }
 
 .productoImagenWrap {
   width: 100%;
-  /* Altura fija para que todas las imágenes ocupen el mismo espacio */
   height: 150px;
   display: flex;
   align-items: center;
@@ -152,7 +158,6 @@
 }
 
 .productoImagen {
-  /* La imagen nunca supera el ancho/alto del contenedor */
   max-width: 100%;
   max-height: 100%;
   width: auto;
@@ -178,9 +183,8 @@
   margin: 10px 0 4px;
   color: #444444;
   font-size: 14px;
-  line-height: 1.15;
   font-weight: 900;
-  /* Evita que títulos largos rompan el layout */
+  line-height: 1.15;
   overflow-wrap: break-word;
   word-break: break-word;
 }
@@ -191,7 +195,6 @@
   font-size: 12px;
   font-weight: 700;
   overflow-wrap: break-word;
-  word-break: break-word;
 }
 
 .productoMarca {
@@ -200,17 +203,18 @@
   font-size: 13px;
   font-weight: 800;
   overflow-wrap: break-word;
-  word-break: break-word;
 }
 
-/* ── Botón "Lo quiero" ────────────────────────────────── */
+/* ─── Botón Lo quiero ───────────────────────────────────── */
+
 .loQuieroButton {
   position: relative;
   overflow: hidden;
   display: flex;
   width: 100%;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  gap: 6px;
   border: 1px solid rgb(247, 142, 5);
   border-radius: 19px;
   background: #f56e00;
@@ -219,18 +223,15 @@
   font-weight: 800;
   padding: 10px 16px;
   cursor: pointer;
-  gap: 6px;
-  transition: all 0.3s ease;
   z-index: 1;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .loQuieroButton::before {
   content: "";
   position: absolute;
-  top: 0;
+  inset: 0;
   left: -100%;
-  width: 100%;
-  height: 100%;
   background: #f8872b;
   transition: left 0.35s ease;
   z-index: -1;
@@ -238,8 +239,6 @@
 
 .loQuieroButton:hover::before { left: 0; }
 .loQuieroButton:hover {
-  color: white;
-  border-color: #f56e00;
   transform: translateY(-2px);
   box-shadow: 0 6px 14px rgba(245, 110, 0, 0.25);
 }
@@ -248,9 +247,11 @@
 .modalSvg {
   width: 24px;
   height: 24px;
+  flex-shrink: 0;
 }
 
-/* ── Vacío / cargando ─────────────────────────────────── */
+/* ─── Vacío / Cargando ──────────────────────────────────── */
+
 .vacio {
   min-height: 220px;
   display: flex;
@@ -263,7 +264,8 @@
   font-weight: 700;
 }
 
-/* ── Cargar más ───────────────────────────────────────── */
+/* ─── Cargar más ────────────────────────────────────────── */
+
 .acciones {
   display: flex;
   justify-content: center;
@@ -280,9 +282,16 @@
   padding: 12px 22px;
   cursor: pointer;
   box-shadow: 0 12px 22px rgba(36, 53, 133, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* ── Modal ────────────────────────────────────────────── */
+.cargarMas:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 28px rgba(36, 53, 133, 0.35);
+}
+
+/* ─── Modal ─────────────────────────────────────────────── */
+
 .modalOverlay {
   position: fixed;
   inset: 0;
@@ -333,10 +342,11 @@
   font-weight: 800;
   padding: 12px 16px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .modalBotonNaranja { background: linear-gradient(180deg, #f2a300 0%, #e78d00 100%); }
+
 .modalBotonVerde {
   margin-top: 10px;
   background: linear-gradient(180deg, #35cf3e 0%, #1ab223 100%);
@@ -369,57 +379,31 @@
 
 .modalWhatsapp,
 .modalCarrito {
-  width: 42px;
-  height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: transparent;
+  width: 32px;
+  height: 32px;
   color: #ffffff;
   flex-shrink: 0;
 }
 
-/* ── Animación entrada ────────────────────────────────── */
+/* ─── Animación ─────────────────────────────────────────── */
+
 @keyframes aparecer {
   from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ── Responsive ───────────────────────────────────────── */
-@media (max-width: 1024px) {
-  .resumenGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .gridProductos {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 250px));
-  }
+.botonFiltrar {
+  display: none;
 }
+/* ─── Mobile ────────────────────────────────────────────── */
 
 @media (max-width: 720px) {
-  .resumen {
-    border-radius: 18px;
-    padding: 14px;
-  }
-
-  .resumenCabecera {
-    margin-bottom: 12px;
-  }
-
+  .resumen       { border-radius: 18px; display: none;}
+  .resumenCabecera { padding: 14px 16px 0; margin-bottom: 10px; }
   .resumenTitulo { font-size: 0.98rem; }
   .resumenTexto  { font-size: 0.84rem; }
-
-  .resumenBloque {
-    min-height: 0;
-    padding: 10px 12px;
-    border-radius: 14px;
-  }
-
-  .etiqueta {
-    margin-bottom: 6px;
-    font-size: 0.82rem;
-  }
+  .resumenBloque { min-height: 0; padding: 10px 12px; border-radius: 14px; }
+  .etiqueta      { margin-bottom: 6px; font-size: 0.82rem; }
 
   .cuerpo { margin-top: 14px; }
 
@@ -433,27 +417,64 @@
     width: 100%;
     border-radius: 16px;
     padding: 12px 12px 16px;
-    box-shadow: 0 12px 22px rgba(53, 53, 53, 0.18);
   }
 
   .productoImagenWrap { height: 130px; }
-
-  .productoTitulo    { font-size: 13px; }
+  .productoTitulo     { font-size: 13px; }
   .productoCategoria,
-  .productoMarca     { font-size: 12px; }
+  .productoMarca      { font-size: 12px; }
 
-  .acciones { padding-top: 14px; }
+  .acciones  { padding-top: 14px; }
+  .cargarMas { width: 100%; min-height: 44px; }
 
-  .cargarMas {
+  .modalCompra  { padding: 20px 16px 16px; border-radius: 16px; }
+  .modalTitulo  { font-size: 18px; }
+  .modalTexto   { font-size: 13px; }
+    /* Mostrar cuando está activo */
+  .resumenVisible {
+    display: block;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(90vw, 360px);
+    z-index: 1100;
+    border-radius: 18px;
+  }
+    /* Overlay oscuro detrás del panel */
+  .filtrosOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 1099;
+  }
+    /* Mostrar el botón Filtrar solo en mobile */
+  .botonFiltrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     min-height: 44px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(180deg, #243585 0%, #1a2a72 100%);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+    margin-bottom: 14px;
+    box-shadow: 0 8px 18px rgba(36, 53, 133, 0.28);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
   }
 
-  .modalCompra {
-    padding: 20px 16px 16px;
-    border-radius: 16px;
+  .botonFiltrar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px rgba(36, 53, 133, 0.35);
   }
 
-  .modalTitulo { font-size: 18px; }
-  .modalTexto  { font-size: 13px; }
+  /* Ocultar overlay fuera de mobile */
+  .filtrosOverlay {
+    display: none;
+  }
 }

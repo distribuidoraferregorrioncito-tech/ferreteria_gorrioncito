@@ -8,6 +8,13 @@
   gap: 1rem;
   align-items: flex-start;
 }
+.sidebarOverlay {
+  display: none;
+}
+
+.sidebarDrawer {
+  display: none;
+}
 
 /* Mobile */
 @media (max-width: 767px) {
@@ -18,5 +25,38 @@
 
   .layout > * {
     width: 100%;
+  }
+   .sidebarOverlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1050;
+  }
+
+  .sidebarDrawer {
+    display: flex;
+    flex-direction: column;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    width: 300px;
+    height: 100vh;
+
+    background: #ffffff;
+    border-radius: 0 22px 22px 0;
+    box-shadow: 6px 0 28px rgba(0, 0, 0, 0.18);
+    overflow-y: auto;
+
+    z-index: 1051;
+
+    animation: entradaSidebar 0.25s ease;
+  }
+
+  @keyframes entradaSidebar {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(0); }
   }
 }

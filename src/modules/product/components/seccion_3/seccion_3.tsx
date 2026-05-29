@@ -9,29 +9,36 @@ import {
 } from "../../../../core/services/producto.service";
 import type { Producto } from "../../../../core/types";
 
+// ─── Tipos ────────────────────────────────────────────────────────────────────
+
 type Props = {
   categoriasSeleccionadas?: string[];
-  marcasSeleccionadas?: string[];
-  busquedaGeneral?: string;
-  onEliminarCategoria?: (categoria: string) => void;
-  onEliminarMarca?: (marca: string) => void;
-  productosVisibles?: number;
-  onCargarMas?: () => void;
+  marcasSeleccionadas?:     string[];
+  busquedaGeneral?:         string;
+  onEliminarCategoria?:     (categoria: string) => void;
+  onEliminarMarca?:         (marca: string) => void;
+  productosVisibles?:       number;
+  onCargarMas?:             () => void;
+  onAbrirFiltros?: () => void;
 };
 
 type CartItem = {
-  id: number;
-  titulo: string;
+  id:       number;
+  titulo:   string;
   categoria: string;
-  marca: string;
-  imagen: string;
+  marca:    string;
+  imagen:   string;
   cantidad: number;
 };
 
-const STORAGE_KEY = "cartItems";
-const WHATSAPP_NUMBER = "51915144663";
+// ─── Constantes ───────────────────────────────────────────────────────────────
 
-const normalizarNombre = (nombre: string | undefined | null, fallback: string) =>
+const STORAGE_KEY      = "cartItems";
+const WHATSAPP_NUMBER  = "51915144663";
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+const normalizarNombre = (nombre: string | undefined | null, fallback: string): string =>
   nombre
     ?.replace(/\.[^.]+$/, "")
     ?.replace(/[_-]+/g, " ")
@@ -39,40 +46,43 @@ const normalizarNombre = (nombre: string | undefined | null, fallback: string) =
     ?.replace(/\b\w/g, (c) => c.toUpperCase())
     ?? fallback;
 
-export default function Seccion_3({
-  categoriasSeleccionadas = [],
-  marcasSeleccionadas = [],
-  busquedaGeneral = "",
-  onEliminarCategoria = () => {},
-  onEliminarMarca = () => {},
-  productosVisibles = 12,
-  onCargarMas = () => {},
-}: Props) {
-  const [mostrarModal, setMostrarModal] = useState(false);
-  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
-  const [productos, setProductos] = useState<Producto[]>([]);
-  const [cargando, setCargando] = useState(true);
+const deduplicar = (listas: Producto[][]): Producto[] => {
+  const mapa = new Map<number, Producto>();
+  for (const lista of listas)
+    for (const p of lista) mapa.set(p.prdcid, p);
+  return Array.from(mapa.values());
+};
+// ─── Componente ───────────────────────────────────────────────────────────────
 
-  // ── Carga de productos ──────────────────────────────────────
+export default function Seccion_3({
+  
+  categoriasSeleccionadas = [],
+  marcasSeleccionadas     = [],
+  busquedaGeneral         = "",
+  onEliminarCategoria     = () => {},
+  onEliminarMarca         = () => {},
+  productosVisibles       = 12,
+  onCargarMas             = () => {},
+  onAbrirFiltros = () => {},
+}: Props) {
+  const [productos,           setProductos]           = useState<Producto[]>([]);
+  const [cargando,            setCargando]            = useState(true);
+  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null);
+  const [mostrarFiltros,       setMostrarFiltros]       = useState(false); // ← aquí dentro
+
+  // ── Carga de productos ────────────────────────────────────────────────────
+
   useEffect(() => {
     const cargar = async () => {
+      setCargando(true);
       try {
-        setCargando(true);
-
         const tieneCategorias = categoriasSeleccionadas.length > 0;
-        const tieneMarcas = marcasSeleccionadas.length > 0;
+        const tieneMarcas     = marcasSeleccionadas.length > 0;
 
         if (!tieneCategorias && !tieneMarcas) {
           setProductos(await listarProductos());
           return;
         }
-
-        const deduplicar = (listas: Producto[][]): Producto[] => {
-          const mapa = new Map<number, Producto>();
-          for (const lista of listas)
-            for (const p of lista) mapa.set(p.prdcid, p);
-          return Array.from(mapa.values());
-        };
 
         const porCategorias = tieneCategorias
           ? deduplicar(await Promise.all(categoriasSeleccionadas.map(listarProductosPorCategoria)))
@@ -88,8 +98,8 @@ export default function Seccion_3({
         } else {
           setProductos(tieneCategorias ? porCategorias : porMarcas);
         }
-      } catch (error) {
-        console.error("Error cargando productos:", error);
+      } catch (err) {
+        console.error("Error cargando productos:", err);
         setProductos([]);
       } finally {
         setCargando(false);
@@ -99,7 +109,8 @@ export default function Seccion_3({
     cargar();
   }, [categoriasSeleccionadas, marcasSeleccionadas]);
 
-  // ── Filtrado local por búsqueda ─────────────────────────────
+  // ── Filtrado local por búsqueda ───────────────────────────────────────────
+
   const productosFiltrados = useMemo(() => {
     const hayFiltros = categoriasSeleccionadas.length > 0 || marcasSeleccionadas.length > 0;
     if (hayFiltros || !busquedaGeneral.trim()) return productos;
@@ -118,41 +129,30 @@ export default function Seccion_3({
     [productosFiltrados, productosVisibles]
   );
 
-  // ── Modal ───────────────────────────────────────────────────
-  const abrirModal = (producto: Producto) => {
-    setProductoSeleccionado(producto);
-    setMostrarModal(true);
-  };
-
-  const cerrarModal = () => {
-    setMostrarModal(false);
-    setProductoSeleccionado(null);
-  };
+  // ── Acciones carrito / WhatsApp ───────────────────────────────────────────
 
   const anadirAlCarrito = () => {
     if (!productoSeleccionado) return;
 
     const nuevo: CartItem = {
-      id: productoSeleccionado.prdcid,
-      titulo: normalizarNombre(productoSeleccionado.prdcnombre, `Producto ${productoSeleccionado.prdcid}`),
-      categoria: normalizarNombre(productoSeleccionado.categoria?.ctgranombre, "Sin categoria"),
-      marca: normalizarNombre(productoSeleccionado.marca?.marcanombre, "Sin marca"),
-      imagen: productoSeleccionado.prdcimgnombrebucket
+      id:       productoSeleccionado.prdcid,
+      titulo:   normalizarNombre(productoSeleccionado.prdcnombre,              `Producto ${productoSeleccionado.prdcid}`),
+      categoria: normalizarNombre(productoSeleccionado.categoria?.ctgranombre, "Sin categoría"),
+      marca:    normalizarNombre(productoSeleccionado.marca?.marcanombre,      "Sin marca"),
+      imagen:   productoSeleccionado.prdcimgnombrebucket
         ? getImagenProducto(productoSeleccionado.prdcimgnombrebucket)
         : "",
       cantidad: 1,
     };
 
     const previos: CartItem[] = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
-    const existente = previos.find((i) => i.id === nuevo.id);
-
-    const siguientes = existente
+    const siguientes = previos.some((i) => i.id === nuevo.id)
       ? previos.map((i) => (i.id === nuevo.id ? { ...i, cantidad: i.cantidad + 1 } : i))
       : [...previos, nuevo];
 
     localStorage.setItem(STORAGE_KEY, JSON.stringify(siguientes));
     window.dispatchEvent(new Event("cartUpdated"));
-    cerrarModal();
+    setProductoSeleccionado(null);
   };
 
   const comprarPorWhatsapp = () => {
@@ -160,9 +160,9 @@ export default function Seccion_3({
 
     const mensaje = [
       "Hola, quiero comprar este producto:",
-      normalizarNombre(productoSeleccionado.prdcnombre, `Producto ${productoSeleccionado.prdcid}`),
-      `Marca: ${normalizarNombre(productoSeleccionado.marca?.marcanombre, "Sin marca")}`,
-      `Categoria: ${normalizarNombre(productoSeleccionado.categoria?.ctgranombre, "Sin categoria")}`,
+      normalizarNombre(productoSeleccionado.prdcnombre,              `Producto ${productoSeleccionado.prdcid}`),
+      `Marca: ${normalizarNombre(productoSeleccionado.marca?.marcanombre,      "Sin marca")}`,
+      `Categoría: ${normalizarNombre(productoSeleccionado.categoria?.ctgranombre, "Sin categoría")}`,
     ].join("\n");
 
     window.open(
@@ -172,79 +172,97 @@ export default function Seccion_3({
     );
   };
 
-  // ── Render ──────────────────────────────────────────────────
+  // ── Render helpers ────────────────────────────────────────────────────────
+
+  const renderFiltros = (
+    items: string[],
+    onEliminar: (item: string) => void
+  ) =>
+    items.length > 0 ? (
+      items.map((item) => (
+        <button
+          key={item}
+          type="button"
+          className={styles.tagBoton}
+          onClick={() => onEliminar(item)}
+        >
+          <span className={styles.tagTexto}>{item}</span>
+          <span className={styles.tagCerrar}>✕</span>
+        </button>
+      ))
+    ) : (
+      <span className={styles.tag}>Todas</span>
+    );
+
+  // ── Render ────────────────────────────────────────────────────────────────
+
   return (
     <>
       <section className={styles.seccion}>
 
-        {/* Filtros activos */}
-        <div className={styles.resumen}>
+        {/* ── Filtros activos ── */}
+        {/* ── Filtros activos ── */}
+        <button
+          type="button"
+          className={styles.botonFiltrar}
+          onClick={onAbrirFiltros} 
+        >
+          Filtrar
+        </button>
+
+        <div className={`${styles.resumen} ${mostrarFiltros ? styles.resumenVisible : ""}`}>
           <div className={styles.resumenCabecera}>
-            <div>
-              <p className={styles.resumenTitulo}>Filtros activos</p>
-              <p className={styles.resumenTexto}>
-                Ajusta categorias y marcas para encontrar mas rapido.
-              </p>
-            </div>
+            <p className={styles.resumenTitulo}>Filtros activos</p>
+            <p className={styles.resumenTexto}>
+              Ajusta categorías y marcas para encontrar más rápido.
+            </p>
           </div>
 
           <div className={styles.resumenGrid}>
             <div className={styles.resumenBloque}>
               <p className={styles.etiqueta}>Marca</p>
               <div className={styles.tagsFila}>
-                {marcasSeleccionadas.length > 0 ? (
-                  marcasSeleccionadas.map((marca) => (
-                    <button
-                      key={marca}
-                      type="button"
-                      className={styles.tagBoton}
-                      onClick={() => onEliminarMarca(marca)}
-                    >
-                      <span className={styles.tagTexto}>{marca}</span>
-                      <span className={styles.tagCerrar}>x</span>
-                    </button>
-                  ))
-                ) : (
-                  <span className={styles.tag}>Todas</span>
-                )}
+                {renderFiltros(marcasSeleccionadas, onEliminarMarca)}
               </div>
             </div>
 
             <div className={styles.resumenBloque}>
-              <p className={styles.etiqueta}>Categorias</p>
+              <p className={styles.etiqueta}>Categorías</p>
               <div className={styles.tagsFila}>
-                {categoriasSeleccionadas.length > 0 ? (
-                  categoriasSeleccionadas.map((categoria) => (
-                    <button
-                      key={categoria}
-                      type="button"
-                      className={styles.tagBoton}
-                      onClick={() => onEliminarCategoria(categoria)}
-                    >
-                      <span className={styles.tagTexto}>{categoria}</span>
-                      <span className={styles.tagCerrar}>x</span>
-                    </button>
-                  ))
-                ) : (
-                  <span className={styles.tag}>Todas</span>
-                )}
+                {renderFiltros(categoriasSeleccionadas, onEliminarCategoria)}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Grid de productos */}
+        {/* Overlay para cerrar en mobile */}
+        {mostrarFiltros && (
+          <div
+            className={styles.filtrosOverlay}
+            onClick={() => setMostrarFiltros(false)}
+          />
+        )}
+
+        {/* ── Grid de productos ── */}
         <div className={styles.cuerpo}>
           {cargando ? (
             <div className={styles.vacio}>Cargando productos...</div>
-          ) : productosFiltrados.length > 0 ? (
+
+          ) : productosFiltrados.length === 0 ? (
+            <div className={styles.vacio}>
+              {busquedaGeneral.trim() && !categoriasSeleccionadas.length && !marcasSeleccionadas.length
+                ? `No se encontraron productos para "${busquedaGeneral}".`
+                : "No hay productos disponibles."}
+            </div>
+
+          ) : (
             <>
               <div className={styles.gridProductos}>
                 {productosRenderizados.map((producto) => {
-                  const titulo = normalizarNombre(producto.prdcnombre, `Producto ${producto.prdcid}`);
-                  const categoria = normalizarNombre(producto.categoria?.ctgranombre, "Sin categoria");
-                  const marca = normalizarNombre(producto.marca?.marcanombre, "Sin marca");
-                  const imagen = producto.prdcimgnombrebucket
+                  const titulo    = normalizarNombre(producto.prdcnombre,                  `Producto ${producto.prdcid}`);
+                  const categoria = normalizarNombre(producto.categoria?.ctgranombre,      "Sin categoría");
+                  const marca     = normalizarNombre(producto.marca?.marcanombre,          "Sin marca");
+                  const imagen    = producto.prdcimgnombrebucket
                     ? getImagenProducto(producto.prdcimgnombrebucket)
                     : "";
 
@@ -262,15 +280,17 @@ export default function Seccion_3({
                           <div className={styles.productoPlaceholder}>Sin imagen</div>
                         )}
                       </div>
+
                       <h3 className={styles.productoTitulo}>{titulo}</h3>
                       <p className={styles.productoCategoria}>{categoria}</p>
                       <p className={styles.productoMarca}>{marca}</p>
+
                       <button
                         type="button"
                         className={styles.loQuieroButton}
-                        onClick={() => abrirModal(producto)}
+                        onClick={() => setProductoSeleccionado(producto)}
                       >
-                        <p>{icon.iconCarrito({ className: styles.modalSvg })}</p>
+                        {icon.iconCarrito({ className: styles.modalSvg })}
                         Lo quiero
                       </button>
                     </article>
@@ -281,39 +301,29 @@ export default function Seccion_3({
               {productosFiltrados.length > productosRenderizados.length && (
                 <div className={styles.acciones}>
                   <button type="button" className={styles.cargarMas} onClick={onCargarMas}>
-                    Ver mas productos
+                    Ver más productos
                   </button>
                 </div>
               )}
             </>
-          ) : (
-            <div className={styles.vacio}>
-              {busquedaGeneral.trim() &&
-              categoriasSeleccionadas.length === 0 &&
-              marcasSeleccionadas.length === 0
-                ? `No se encontraron productos para "${busquedaGeneral}".`
-                : "No hay productos disponibles."}
-            </div>
           )}
         </div>
       </section>
 
-      {/* Modal de compra */}
-      {mostrarModal && productoSeleccionado && (
-        <div className={styles.modalOverlay} onClick={cerrarModal}>
+      {/* ── Modal de compra ── */}
+      {productoSeleccionado && (
+        <div className={styles.modalOverlay} onClick={() => setProductoSeleccionado(null)}>
           <div className={styles.modalCompra} onClick={(e) => e.stopPropagation()}>
-            <h3 className={styles.modalTitulo}>Como deseas continuar?</h3>
-            <p className={styles.modalTexto}>Elige una opcion para completar tu compra</p>
+            <h3 className={styles.modalTitulo}>¿Cómo deseas continuar?</h3>
+            <p className={styles.modalTexto}>Elige una opción para completar tu compra</p>
 
             <button type="button" className={styles.modalBotonNaranja} onClick={anadirAlCarrito}>
-              <span className={styles.modalIcono}>
-                {icon.iconCarrito({ className: styles.modalCarrito })}
-              </span>
+              {icon.iconCarrito({ className: styles.modalCarrito })}
               <span>Añadir al carrito</span>
             </button>
 
             <button type="button" className={styles.modalBotonVerde} onClick={comprarPorWhatsapp}>
-              <p>{icon.iconWhatsApp({ className: styles.modalWhatsapp })}</p>
+              {icon.iconWhatsApp({ className: styles.modalWhatsapp })}
               <span>Realizar la compra</span>
             </button>
           </div>

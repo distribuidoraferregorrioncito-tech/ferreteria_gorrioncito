@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import style from "./seccion_2.module.css";
+import { Link } from "react-router-dom";
 import {
   listarCategorias,
   getImagenCategoria,
@@ -157,7 +158,12 @@ const Seccion_2 = () => {
                 </div>
                 <div className={style.cardBody}>
                   <h3 className={style.cardTitulo}>{tarjeta.titulo}</h3>
-                  <p className={style.cardLink}>Ver más</p>
+                  <Link
+                    to={`/product?categoria=${encodeURIComponent(tarjeta.titulo)}`}
+                    className={style.cardLink}
+                  >
+                    Ver más
+                  </Link>
                 </div>
               </article>
             ))
